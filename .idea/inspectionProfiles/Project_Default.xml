@@ -1,0 +1,33 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="Project Default" />
+    <inspection_tool class="PyInterpreterInspection" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="PyPackageRequirementsInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredPackages">
+        <value>
+          <list size="2">
+            <item index="0" class="java.lang.String" itemvalue="opencv-contrib-python" />
+            <item index="1" class="java.lang.String" itemvalue="opencv-python" />
+          </list>
+        </value>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="PyRedeclarationInspection" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="PyUnresolvedReferencesInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredIdentifiers">
+        <list>
+          <option value="list.name" />
+          <option value="list.hp" />
+          <option value="list.max_hp" />
+          <option value="dict.id" />
+          <option value="sqlalchemy.testing.pickleable.User.password" />
+          <option value="dict.username" />
+          <option value="dict.url" />
+          <option value="dict.user_id" />
+          <option value="dict.description" />
+          <option value="tflite_model_maker" />
+        </list>
+      </option>
+    </inspection_tool>
+  </profile>
+</component>
