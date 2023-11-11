@@ -1,7 +1,8 @@
 import enum
-from sqlalchemy import Column, Integer, String, func, ForeignKey, Boolean, Table, Numeric
+from sqlalchemy import Column, Integer, String, func, ForeignKey, Boolean, Table, Numeric, Text
 from sqlalchemy.sql.sqltypes import DateTime
 from sqlalchemy.orm import relationship, declarative_base
+
 
 
 Base = declarative_base()
@@ -40,3 +41,10 @@ class User(Base):
     created_at = Column(DateTime, default=func.now(), onupdate=func.now())
     updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
     role = relationship("Role", backref="users")
+
+class PDFModel(Base):
+    __tablename__ = "pdfs"
+
+    id = Column(Integer, primary_key=True, index=True)
+    filename = Column(String, index=True)
+    content = Column(String)

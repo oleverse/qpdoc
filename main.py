@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from starlette.staticfiles import StaticFiles
 # from app.routes import auth, search, profile, users
 # from front.routes import web_route
-from app.routes import auth, profile
+from app.routes import auth, profile, upload_pdf
 from sqlalchemy import text
 from app.database.db import get_db
 import uvicorn
@@ -15,7 +15,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 app.include_router(auth.router, prefix='/api')
 app.include_router(profile.router, prefix='/api')
-
+app.include_router(upload_pdf.router, prefix='/api')
 
 @app.get("/api/healthchecker")
 def healthchecker(db: Session = Depends(get_db)):
