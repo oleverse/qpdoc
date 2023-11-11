@@ -78,3 +78,9 @@ class TokenModel(BaseModel):
 
 class RequestEmail(BaseModel):
     email: EmailStr
+
+class PDFFile(BaseModel):
+    filename: str
+    content: str
+    user_id: Optional[int] = None
+    context: Optional[str] = None
