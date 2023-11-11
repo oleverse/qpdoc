@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>QPDoc: Email confirmation</title>
+</head>
+<body>
+<p>Hi {{username}},</p>
+<p>Thank you for your registration!</p>
+<p>To ensure that you can get messages from us please consider to verify your email address by clicking on the following link:</p>
+<p>
+    <a href="{{host}}api/auth/confirm_email/{{token}}">
+        {{host}}api/auth/confirm_email/{{token}}
+    </a>
+</p>
+<p>If you did not sign up for our service, please ignore this email.</p>
+<p>Thank you,</p>
+<p>Devel More Group</p>
+</body>
+</html>
