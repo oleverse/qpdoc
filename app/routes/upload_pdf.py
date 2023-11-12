@@ -3,17 +3,18 @@ from fastapi.responses import JSONResponse
 from typing import List
 from app.schemas.essential import PDFFile
 from app.database.models import PDFModel
-from app.database.db import SessionLocal
+from app.database.db import get_db
 from app.services.upload_pdf import save_pdf_to_db
 import io
 import PyPDF2
 
 router = APIRouter(prefix='/upload', tags=['upload'])
 
+
 @router.post("/uploadpdf/")
 async def upload_pdf(files: List[UploadFile] = File(...)):
     try:
-        db = SessionLocal()
+        db = next(get_db())
 
         for file in files:
             if not file.filename.endswith('.pdf'):
@@ -23,7 +24,6 @@ async def upload_pdf(files: List[UploadFile] = File(...)):
             pdf_stream = io.BytesIO(file_content)
             pdf_reader = PyPDF2.PdfReader(pdf_stream)
             text = ""
-
             for page_number in range(len(pdf_reader.pages)):
                 text += pdf_reader.pages[page_number].extract_text()
 
@@ -33,5 +33,3 @@ async def upload_pdf(files: List[UploadFile] = File(...)):
         return JSONResponse(content={"message": "PDF files uploaded successfully"})
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
-    finally:
-        db.close()
