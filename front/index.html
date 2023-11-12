@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>qpdoc</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="title">
+        <h1>qpdoc</h1>
+    </div>
+    <div class="wrapper">
+        <div class="form-box">
+            <div class="button-box">
+                <div id="btn"></div>
+
+
+                <button type="button" 
+                class="toogle-btn" onclick="login()">Login</button>
+
+                <button type="button"
+                class="toogle-btn" onclick="register()">Register
+
+                    
+                </button>
+            </div>
+            <form id="login" class="input-group">
+                <input type="text"
+                id="username"
+                class="input-field"
+                placeholder="Username" required>
+                <input type="password"
+                id="password"
+                class="input-field"
+                placeholder="Password" required>
+                <button type="submit"
+                class="submit-btn">Login</button>
+            </form>
+            <form id="register" class="input-group">
+                <input type="text"
+                id="username"
+                class="input-field"
+                placeholder="Username" required>
+                <input type="email"
+                id="email"
+                class="input-field"
+                placeholder="Email" required>
+                <input type="password"
+                id="password"
+                class="input-field"
+                placeholder="Password" required>
+                <button type="submit"
+                class="submit-btn">Register</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        var log = document.getElementById("login")
+        var reg = document.getElementById("register")
+        var btn = document.getElementById("btn")
+
+        function login(){
+            log.style.left = "50px"
+            reg.style.left = "450px"
+            btn.style.left = "0px"
+        }
+
+        function register(){
+            log.style.left = "-400px"
+            reg.style.left = "50px"
+            btn.style.left = "110px"
+        }
+    
+        log.addEventListener("click", 
+        function(event) {
+            event.preventDefault();
+            const username = document.getElementById("username").value;
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+            const body = {
+                username,
+                email,
+                password
+            }
+
+            fetch("/auth/index", {
+                method: "POST",
+                headers: {"Content-Type": "application.json"},
+                body: JSON.stringify(body)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.succes) {window.location.href = "/pages/index";}
+                else {
+                    let message = ""
+                    data.detail.forEach(element => {
+                        let errorElement = document.createElement("p")
+                        errorElement.textContent = element.message
+                        document.getElementById("error").appendChild(errorElement);
+                    })
+                }
+            })
+            .catch(error => console.error(error));
+        })
+
+
+        reg.addEventListener("click", 
+        function(event) {
+            event.preventDefault();
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+            const formData = new URLSearchParams();
+
+            const body = {
+                username,
+                password
+            }
+
+            fetch ("/auth/index", {
+                method: "POST",
+                headers: {"Content-Type": "application/x-www-form-urlencoded"},
+                body: formData.toString()
+            })
+            .then(response => response.json())
+            .then(data => {
+                localStorage.setItem("user-api", JSON.stringify(data));
+                if (data.success) {window.location.href = "/pages/chat";}
+                else {document.getElementById("error").textContent = data.detail;}
+            })
+            .catch(error => console.error("Error: " + error));
+        })
+
+    </script>
+ 
+
+</body>
+</html>
