@@ -139,3 +139,58 @@ input::placeholder {
     padding: 10px 0 35px 65px;
     box-shadow: 0 3px 14px #4b5563;
 }
+
+.mess-chat {
+    display: flex;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #69b4f3;
+    background-color: #9aafc0;
+    max-width: 70%;
+}
+
+.mess-user {
+    flex: 1;
+    display: flex;
+    flex-direction: row-reverse;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #69b4f3;
+    background: #bfe2ff;
+}
+
+.form-box1 {
+    width: 900px;
+    height: 400px;
+    position: relative;
+    margin: auto;
+    padding: 35px;
+    background-color: #fafafa;
+    backdrop-filter: blur(20px);
+    border-radius: 20px;
+    box-shadow: 0 3px 14px #4b5563;
+    overflow: hidden;
+}
+
+form {
+    position: fixed;
+    bottom: 40px;
+    width: 100%;
+    text-align: center;
+}
+
+form input {
+    background: wheat;
+    border-radius: 20px;
+    padding: 15px 20px;
+    /*font-family: 'Inter', sans-serif;*/
+    border: 1px solid transparent;
+    color: #ECECF1;
+    outline: none;
+    width: 900px;
+}
+
+form input:focus {
+    border: 3px solid;
+    border-color: #3b06fa;
+}
