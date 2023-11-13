@@ -13,7 +13,7 @@ body {
   position: relative;
   border-radius: 20px;
   box-shadow: 0 3px 10px #e0dee9;
-  margin-top: 90px;
+  margin-top: 70px;
 }
 
 .leftbox {
@@ -95,20 +95,41 @@ h3 {
 }
 
 .logout-btn {
-  width: 30%;
+  width: 40%;
   color: #fafafa;
   padding: 10px 1px;
-  background-color: #ba0000;
-  border-radius: 20px;
+  background-color: #4b5eb8;
+  border-radius: 15px;
   border: none;
   outline: none;
   display: block;
   transition: 0.3s;
-  margin-left: 115px;
+  margin-left: 230px;
   margin-top: 270px;
 }
 
 .logout-btn:hover {
+  /* transform: scale(1.1); */
+  cursor: pointer;
+  background-color: #fafafa;
+  color: #4b5eb8;
+}
+
+.delete-btn {
+  width: 55%;
+  color: #fafafa;
+  padding: 7px 15px;
+  background-color: #ba0000;
+  border-radius: 10px;
+  border: none;
+  outline: none;
+  display: block;
+  transition: 0.3s;
+  margin-left: -15px;
+  margin-top: -30px;
+}
+
+.delete-btn:hover {
   /* transform: scale(1.1); */
   cursor: pointer;
   background-color: #e44a59;
@@ -177,15 +198,23 @@ ul {
 h1 {
   color: #4b5eb8;
   font-size: 70px;
-  margin-top: 20px;
-  margin-left: 60px;
+  border: 2px solid #fafafa;
+  border-radius: 30px;
+  background-color: #fafafa;
+  padding: 10px 20px;
+  padding-bottom: 15px;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 50px;
+  background-color: #4b5eb8;
 }
 
 #user {
-  text-align: center;
+  margin-right: 250px;
   font-size: 30px;
-  padding: 10px;
-
-  background-color: #4b5eb8;
   color: #fafafa;
 }
