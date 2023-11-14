@@ -8,7 +8,7 @@ from app.repository import users as repository_users
 from app.schemas.essential import RequestEmail, UserStatusResponse, UserStatusChange
 from app.schemas.essential import UserModel, UserResponse, TokenModel
 from app.services.auth import auth_service
-from app.services.email import send_confirmation_email
+from app.services.send_email import send_confirmation_email
 
 
 router = APIRouter(prefix='/auth', tags=['auth'])
