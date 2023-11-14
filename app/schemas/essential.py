@@ -79,6 +79,7 @@ class TokenModel(BaseModel):
 class RequestEmail(BaseModel):
     email: EmailStr
 
+
 class PDFFile(BaseModel):
     filename: str
     content: str
