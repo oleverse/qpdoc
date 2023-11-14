@@ -25,7 +25,8 @@ class Settings(BaseSettings):
     cloudinary_api_key: str
     cloudinary_api_secret: str
 
-    max_tags: int = 5
+    openai_api_key: str
+    hf_api_access_token: str
 
     class Config:
         env_file = ".env"
