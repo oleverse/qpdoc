@@ -1,208 +1,75 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>qpdoc_profile</title>
-    <link rel="stylesheet" 
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+{% extends "base.html" %}
+{% block title %}
+    <title>{{ title }}</title>
+{% endblock %}
+{% block style_file %}
     <link rel="stylesheet" href="{{ url_for('static', path='/css/profile.css') }}">
-</head>
-<body>
-    <h1>
-        qpdoc
-    </h1>
-    <h2 id="user">User profile</h2>
-    <div class="container">
-        <div class="leftbox">
-            <nav>
-                <a href="#" class="chat">
-                    <i class="fa-solid fa-comment-dots"></i>
-                </a>
-            </nav>
-        </div>
+{% endblock %}
+{% block content %}
+            <h2 id="user">User profile</h2>
+            <div class="container">
+                <div class="leftbox">
+                    <nav>
+                        <a href="#" class="chat">
+                            <i class="fa-solid fa-comment-dots"></i>
+                        </a>
+                    </nav>
+                </div>
 
-        <div class="centerbox">
-            <div class="profile">
-                <h2>Username</h2>
-                <h3>email</h3>
-                <p id="rename">Змінити ім'я користувача</p>
-                <input type="text"
-                id="username"
-                class="input-field"
-                placeholder="New username" required>
-                <button type="submit"
-                class="name-btn">Rename</button>
-                <p>
-                    <button type="submit"
-                    class="logout-btn">Logout</button>
-                </p>
+                <div class="centerbox">
+                    <div class="profile">
+                        <h2>Username</h2>
+                        <h3>email</h3>
+                        <p id="rename">Змінити ім'я користувача</p>
+                        <input type="text"
+                        id="username"
+                        class="input-field"
+                        placeholder="New username" required>
+                        <button type="submit"
+                        class="name-btn">Rename</button>
+                        <p>
+                            <button type="submit"
+                            class="logout-btn">Logout</button>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="rightbox">
+                    <input type="file" id="file-input" multiple>
+                    <label for="file-input">
+                        <i class="fa-solid fa-arrow-up-from-bracket"></i>
+                        &nbsp; Choose PDF
+                    </label>
+                    <div id="num-of-files">No Files Coosen</div>
+                    <ul id="files-list"></ul>
+                </div>
             </div>
-        </div>
 
-        <div class="rightbox">
-            <input type="file" id="file-input" multiple>
-            <label for="file-input">
-                <i class="fa-solid fa-arrow-up-from-bracket"></i>
-                &nbsp; Choose PDF
-            </label>
-            <div id="num-of-files">No Files Coosen</div>
-            <ul id="files-list"></ul>
-        </div>
-    </div>
+            <!-- SCRIPT FOR FILE BAR -->
 
-    <!-- SCRIPT FOR FILE BAR -->
+            <script>
+                let fileInput = document.getElementById("file-input");
+                let fileList = document.getElementById("files-list");
+                let numOfFiles = document.getElementById("num-of-files");
 
-    <script>
-        let fileInput = document.getElementById("file-input");
-        let fileList = document.getElementById("files-list");
-        let numOfFiles = document.getElementById("num-of-files");
+                fileInput.addEventListener("change", () => {
+                    fileList.innerHTML = "";
+                    numOfFiles.textContent = `${fileInput.files.length}
+                    Files Selected`;
 
-        fileInput.addEventListener("change", () => {
-            fileList.innerHTML = "";
-            numOfFiles.textContent = `${fileInput.files.length} 
-            Files Selected`;
+                    for (i of fileInput.files) {
+                        let reader = new FileReader();
+                        let listItem = document.createElement("li");
+                        let fileName = i.name;
+                        fileSize = (i.size / 1024).toFixed(1);
+                        listItem.innerHTML = `<p>${fileName}</p><p>${fileSize}KB</p>`;
 
-            for (i of fileInput.files) {
-                let reader = new FileReader();
-                let listItem = document.createElement("li");
-                let fileName = i.name;
-                fileSize = (i.size / 1024).toFixed(1);
-                listItem.innerHTML = `<p>${fileName}</p><p>${fileSize}KB</p>`;
-
-                if (fileSize >= 1024) {
-                    fileSize = (fileSize / 1024).toFixed(1);
-                    listItem.innerHTML = `<p>${fileName}</p><p>${fileSize}MB</p>`;
-                }
-                fileList.appendChild(listItem);
-            }
-        });
-    </script>
-</body>
-</html>
-
-<!--     <div class="title">
-        <h1>qpdoc</h1>
-    </div>
-    <div class="wrapper">
-        <div class="form-box">
-            <div class="button-box">
-                <div id="btn"></div>
-
-
-                <button type="button" 
-                class="toogle-btn" onclick="login()">Login</button>
-
-                <button type="button"
-                class="toogle-btn" onclick="register()">Register
-
-                    
-                </button>
-            </div>
-            <form id="login" class="input-group">
-                <input type="text"
-                id="username"
-                class="input-field"
-                placeholder="Username" required>
-                <input type="text"
-                id="password"
-                class="input-field"
-                placeholder="Password" required>
-                <button type="submit"
-                class="submit-btn">Login</button>
-            </form>
-            <form id="register" class="input-group">
-                <input type="text"
-                id="username"
-                class="input-field"
-                placeholder="Username" required>
-                <input type="email"
-                id="email"
-                class="input-field"
-                placeholder="Email" required>
-                <input type="text"
-                id="password"
-                class="input-field"
-                placeholder="Password" required>
-                <button type="submit"
-                class="submit-btn">Register</button>
-            </form>
-        </div>
-    </div>
-
-    <script>
-        var log = document.getElementById("login")
-        var reg = document.getElementById("register")
-        var btn = document.getElementById("btn")
-
-        function login(){
-            log.style.left = "50px"
-            reg.style.left = "450px"
-            btn.style.left = "0px"
-        }
-
-        function register(){
-            log.style.left = "-400px"
-            reg.style.left = "50px"
-            btn.style.left = "110px"
-        }
-    
-        log.addEventListener("click", 
-        function(event) {
-            event.preventDefault();
-            const username = document.getElementById("username").value;
-            const email = document.getElementById("email").value;
-            const password = document.getElementById("password").value;
-            const body = {
-                username,
-                email,
-                password
-            }
-
-            fetch("/auth/index", {
-                method: "POST",
-                headers: {"Content-Type": "application.json"},
-                body: JSON.stringify(body)
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.succes) {window.location.href = "/pages/index";}
-                else {
-                    let message = ""
-                    data.detail.forEach(element => {
-                        let errorElement = document.createElement("p")
-                        errorElement.textContent = element.message
-                        document.getElementById("error").appendChild(errorElement);
-                    })
-                }
-            })
-            .catch(error => console.error(error));
-        })
-
-
-        reg.addEventListener("click", 
-        function(event) {
-            event.preventDefault();
-            const username = document.getElementById("username").value;
-            const password = document.getElementById("password").value;
-            const formData = new URLSearchParams();
-
-            const body = {
-                username,
-                password
-            }
-
-            fetch ("/auth/index", {
-                method: "POST",
-                headers: {"Content-Type": "application/x-www-form-urlencoded"},
-                body: formData.toString()
-            })
-            .then(response => response.json())
-            .then(data => {
-                localStorage.setItem("user-api", JSON.stringify(data));
-                if (data.success) {window.location.href = "/pages/chat";}
-                else {document.getElementById("error").textContent = data.detail;}
-            })
-            .catch(error => console.error("Error: " + error));
-        })
-
-    </script> -->
+                        if (fileSize >= 1024) {
+                            fileSize = (fileSize / 1024).toFixed(1);
+                            listItem.innerHTML = `<p>${fileName}</p><p>${fileSize}MB</p>`;
+                        }
+                        fileList.appendChild(listItem);
+                    }
+                });
+            </script>
+{% endblock %}

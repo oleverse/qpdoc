@@ -1,15 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>qpdoc</title>
-    <link rel="stylesheet" href="{{ url_for('static', path='/css/styles.css') }}">
-</head>
-<body>
-    <div class="title">
-        <h1>qpdoc</h1>
-    </div>
-    <div class="wrapper">
+{% extends "base.html" %}
+{% block title %}
+    <title>{{ title }}</title>
+{% endblock %}
+{% block style_file %}
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/auth.css') }}">
+{% endblock %}
+{% block content %}
         <div class="form-box">
             <div class="button-box">
                 <div id="btn"></div>
@@ -24,7 +20,7 @@
                     
                 </button>
             </div>
-            <form id="login" class="input-group">
+            <form id="login" action="/login" method="post" class="input-group">
                 <input type="text"
                 id="username"
                 class="input-field"
@@ -36,7 +32,7 @@
                 <button type="submit"
                 class="submit-btn">Login</button>
             </form>
-            <form id="register" class="input-group">
+            <form id="register" action="/register" method="post" class="input-group">
                 <input type="text"
                 id="username"
                 class="input-field"
@@ -53,8 +49,9 @@
                 class="submit-btn">Register</button>
             </form>
         </div>
-    </div>
+{% endblock %}
 
+{% block log_reg_js %}
     <script>
         var log = document.getElementById("login")
         var reg = document.getElementById("register")
@@ -84,14 +81,14 @@
                 password
             }
 
-            fetch("/auth/index", {
+            fetch("/login", {
                 method: "POST",
                 headers: {"Content-Type": "application.json"},
                 body: JSON.stringify(body)
             })
             .then(response => response.json())
             .then(data => {
-                if (data.succes) {window.location.href = "/pages/index";}
+                if (data.succes) {window.location.href = "/";}
                 else {
                     let message = ""
                     data.detail.forEach(element => {
@@ -117,7 +114,7 @@
                 password
             }
 
-            fetch ("/auth/index", {
+            fetch ("/register", {
                 method: "POST",
                 headers: {"Content-Type": "application/x-www-form-urlencoded"},
                 body: formData.toString()
@@ -132,7 +129,4 @@
         })
 
     </script>
- 
-
-</body>
-</html>
+{% endblock %}
