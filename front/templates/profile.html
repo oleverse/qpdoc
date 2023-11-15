@@ -3,73 +3,99 @@
     <title>{{ title }}</title>
 {% endblock %}
 {% block style_file %}
+    <link rel="stylesheet" 
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', path='/css/profile.css') }}">
 {% endblock %}
 {% block content %}
-            <h2 id="user">User profile</h2>
-            <div class="container">
-                <div class="leftbox">
-                    <nav>
-                        <a href="#" class="chat">
-                            <i class="fa-solid fa-comment-dots"></i>
-                        </a>
-                    </nav>
-                </div>
+    <header>
+        <h1>
+            qpdoc
+        </h1>
+        <h2 id="user">
+            User profile
+        </h2>
+        
+    </header>
 
-                <div class="centerbox">
-                    <div class="profile">
-                        <h2>Username</h2>
-                        <h3>email</h3>
-                        <p id="rename">Змінити ім'я користувача</p>
-                        <input type="text"
-                        id="username"
-                        class="input-field"
-                        placeholder="New username" required>
+    <div class="container">
+        <div class="leftbox">
+            <nav>
+                <a href="#" class="chat">
+                    <i class="fa-solid fa-comment-dots"></i>
+                </a>
+            </nav>
+        </div>
+
+        <div class="centerbox">
+            <div class="profile">
+                <h2>Username</h2>
+                <h3>email</h3>
+
+                <form action="#" class="change-name">
+                    <p id="rename">Змінити ім'я користувача</p>
+                    <input type="text"
+                    id="username"
+                    class="input-field"
+                    placeholder="New username" required>
+                    <button type="submit"
+                    class="name-btn">Rename</button>
+                </form>
+
+                <form action="#" class="logout">
+                    <p>
                         <button type="submit"
-                        class="name-btn">Rename</button>
-                        <p>
-                            <button type="submit"
-                            class="logout-btn">Logout</button>
-                        </p>
-                    </div>
-                </div>
+                        class="logout-btn">Logout</button>
+                    </p>
+                </form>
 
-                <div class="rightbox">
-                    <input type="file" id="file-input" multiple>
-                    <label for="file-input">
-                        <i class="fa-solid fa-arrow-up-from-bracket"></i>
-                        &nbsp; Choose PDF
-                    </label>
-                    <div id="num-of-files">No Files Coosen</div>
-                    <ul id="files-list"></ul>
-                </div>
+                <form action="#" class="del-acc">
+                    <p>
+                        <button type="submit"
+                        class="delete-btn">Delete Account</button>
+                    </p>
+                </form>
+
             </div>
+        </div>
 
-            <!-- SCRIPT FOR FILE BAR -->
+        <form action="#" class="add-pdf">
+            <div class="rightbox">
+                <input type="file" id="file-input" multiple>
+                <label for="file-input">
+                    <i class="fa-solid fa-arrow-up-from-bracket"></i>
+                    &nbsp; Choose PDF
+                </label>
+                <div id="num-of-files">No Files Coosen</div>
+                <ul id="files-list"></ul>
+            </div>
+        </form>
 
-            <script>
-                let fileInput = document.getElementById("file-input");
-                let fileList = document.getElementById("files-list");
-                let numOfFiles = document.getElementById("num-of-files");
+    <!-- SCRIPT FOR FILE BAR -->
 
-                fileInput.addEventListener("change", () => {
-                    fileList.innerHTML = "";
-                    numOfFiles.textContent = `${fileInput.files.length}
-                    Files Selected`;
+    <script>
+        let fileInput = document.getElementById("file-input");
+        let fileList = document.getElementById("files-list");
+        let numOfFiles = document.getElementById("num-of-files");
 
-                    for (i of fileInput.files) {
-                        let reader = new FileReader();
-                        let listItem = document.createElement("li");
-                        let fileName = i.name;
-                        fileSize = (i.size / 1024).toFixed(1);
-                        listItem.innerHTML = `<p>${fileName}</p><p>${fileSize}KB</p>`;
+        fileInput.addEventListener("change", () => {
+            fileList.innerHTML = "";
+            numOfFiles.textContent = `${fileInput.files.length}
+            Files Selected`;
 
-                        if (fileSize >= 1024) {
-                            fileSize = (fileSize / 1024).toFixed(1);
-                            listItem.innerHTML = `<p>${fileName}</p><p>${fileSize}MB</p>`;
-                        }
-                        fileList.appendChild(listItem);
-                    }
-                });
-            </script>
+            for (i of fileInput.files) {
+                let reader = new FileReader();
+                let listItem = document.createElement("li");
+                let fileName = i.name;
+                fileSize = (i.size / 1024).toFixed(1);
+                listItem.innerHTML = `<p>${fileName}</p><p>${fileSize}KB</p>`;
+
+                if (fileSize >= 1024) {
+                    fileSize = (fileSize / 1024).toFixed(1);
+                    listItem.innerHTML = `<p>${fileName}</p><p>${fileSize}MB</p>`;
+                }
+                fileList.appendChild(listItem);
+            }
+        });
+    </script>
 {% endblock %}

@@ -114,6 +114,26 @@ h3 {
   background-color: #e44a59;
 }
 
+.delete-btn {
+  width: 55%;
+  color: #fafafa;
+  padding: 7px 15px;
+  background-color: #ba0000;
+  border-radius: 10px;
+  border: none;
+  outline: none;
+  display: block;
+  transition: 0.3s;
+  margin-left: -15px;
+  margin-top: -30px;
+}
+
+.delete-btn:hover {
+  /* transform: scale(1.1); */
+  cursor: pointer;
+  background-color: #e44a59;
+}
+
 .rightbox {
   float: right;
   margin-left: 525px;
@@ -179,6 +199,14 @@ h1 {
   font-size: 70px;
   margin-top: 20px;
   margin-left: 60px;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 50px;
+  background-color: #4b5eb8;
 }
 
 #user {
