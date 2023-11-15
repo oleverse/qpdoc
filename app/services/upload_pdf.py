@@ -3,7 +3,7 @@ import PyPDF2
 from app.schemas.essential import PDFFile
 from app.database.models import PDFModel
 from sqlalchemy.orm import Session
-import fitz
+# import fitz
 from docx import Document
 from odf import text, teletype
 from odf.opendocument import load
