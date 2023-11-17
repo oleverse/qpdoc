@@ -6,18 +6,168 @@
     <link rel="stylesheet" href="{{ url_for('static', path='/css/chat.css') }}">
 {% endblock %}
 {% block content %}
-            <div class="form-box1">
-                <div id="messages">
-                    <div class="mess-user">
-                        <div class="message-bubble"></div>
-                        Some text
-                    </div>
-                    <div class="mess-chat">
-                        Some chat text
-                    </div>
+    <div class="container">
+
+        <div class="leftbox">
+            <form action="#" class="add-pdf">
+                <input type="file" id="file-input" multiple>
+                <label for="file-input">
+                    <i class="fa-solid fa-arrow-up-from-bracket"></i>
+                    &nbsp; Choose PDF
+                </label>
+                <div id="num-of-files">No Files Coosen</div>
+                <ul id="files-list"></ul>
+            </form>
+        </div>
+
+        <div class="rightbox">
+            <div class="msgs">
+                <div class="bot-msg">
+                    <p>
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                        sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                        Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
+                        aliquip ex ea commodo consequat.
+                    </p>
+                </div>
+
+                <div class="user-msg">
+                    <p>
+                        Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+                        Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                    </p>
+                </div>
+                <div class="bot-msg">
+                    <p>
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                        sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                        Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
+                        aliquip ex ea commodo consequat.
+                    </p>
+                </div>
+
+                <div class="user-msg">
+                    <p>
+                        Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+                        Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                    </p>
+                </div>
+                <div class="bot-msg">
+                    <p>
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                        sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                        Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
+                        aliquip ex ea commodo consequat.
+                    </p>
+                </div>
+
+                <div class="user-msg">
+                    <p>
+                        Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+                        Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                    </p>
+                </div>
+                <div class="bot-msg">
+                    <p>
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                        sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                        Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
+                        aliquip ex ea commodo consequat.
+                    </p>
+                </div>
+
+                <div class="user-msg">
+                    <p>
+                        Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+                        Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                    </p>
+                </div>
+                <div class="bot-msg">
+                    <p>
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                        sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                        Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
+                        aliquip ex ea commodo consequat.
+                    </p>
+                </div>
+
+                <div class="user-msg">
+                    <p>
+                        Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+                        Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                    </p>
+                </div>
+                <div class="bot-msg">
+                    <p>
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                        sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                        Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
+                        aliquip ex ea commodo consequat.
+                    </p>
+                </div>
+
+                <div class="user-msg">
+                    <p>
+                        Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+                        Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                    </p>
+                </div>
+                <div class="bot-msg">
+                    <p>
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                        sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                        Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
+                        aliquip ex ea commodo consequat.
+                    </p>
+                </div>
+
+                <div class="user-msg">
+                    <p>
+                        Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+                        Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                    </p>
                 </div>
             </div>
-            <form onsubmit="submitForm(event)">
-                <input type="text" id="input" placeholder="What you want to know" />
-            </form>
+
+            <div class="typing-box">
+                <form action="#" class="send">
+                    <input type="text"
+                    class="input-field"
+                    placeholder="What do you want to know...">
+                    <button type="submit" class="send-btn">
+                        <i class="fa-solid fa-circle-arrow-up"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+
+    </div>
+    
+     <!-- SCRIPT FOR FILE BAR -->
+
+     <script>
+        let fileInput = document.getElementById("file-input");
+        let fileList = document.getElementById("files-list");
+        let numOfFiles = document.getElementById("num-of-files");
+
+        fileInput.addEventListener("change", () => {
+            fileList.innerHTML = "";
+            numOfFiles.textContent = `${fileInput.files.length} 
+            Files Selected`;
+
+            for (i of fileInput.files) {
+                let reader = new FileReader();
+                let listItem = document.createElement("li");
+                let fileName = i.name;
+                fileSize = (i.size / 1024).toFixed(1);
+                listItem.innerHTML = `<p>${fileName}</p><p>${fileSize}KB</p>`;
+
+                if (fileSize >= 1024) {
+                    fileSize = (fileSize / 1024).toFixed(1);
+                    listItem.innerHTML = `<p>${fileName}</p><p>${fileSize}MB</p>`;
+                }
+                fileList.appendChild(listItem);
+            }
+        });
+    </script>
 {% endblock %}
