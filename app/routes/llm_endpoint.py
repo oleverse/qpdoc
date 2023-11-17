@@ -9,7 +9,7 @@ router = APIRouter(prefix='/llm', tags=['llm'])
 
 
 @router.post("/chat")
-async def chat_with_bot(query: str, user_id: int, db: SessionLocal = Depends(get_db)):
+async def llm_endpoint(query: str, user_id: int, db: SessionLocal = Depends(get_db)):
     # Знаходимо всі файли, що належать даному користувачу
     #user_files = db.query(PDFModel).filter(PDFModel.user_id == user_id).all()
 
