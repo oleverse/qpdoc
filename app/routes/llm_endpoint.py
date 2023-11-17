@@ -11,17 +11,17 @@ router = APIRouter(prefix='/llm', tags=['llm'])
 @router.post("/chat")
 async def chat_with_bot(query: str, user_id: int, db: SessionLocal = Depends(get_db)):
     # Знаходимо всі файли, що належать даному користувачу
-    user_files = db.query(PDFModel).filter(PDFModel.user_id == user_id).all()
+    #user_files = db.query(PDFModel).filter(PDFModel.user_id == user_id).all()
 
     # Перевірка, чи є файли
-    if not user_files:
-        raise HTTPException(status_code=404, detail="No files uploaded by this user")
+    #if not user_files:
+    #    raise HTTPException(status_code=404, detail="No files uploaded by this user")
 
     # Збираємо відповіді для кожного файлу
-    answers = []
-    for file in user_files:
-        # Передаємо ID кожного файлу у функцію чат-бота
-        answer = openai_service.run_llm(query, file.id, db)
-        answers.append({"file_id": file.id, "answer": answer})
 
-    return {"answers": answers}
+    #for file in user_files:
+    # Передаємо ID кожного файлу у функцію чат-бота
+    answer = openai_service.run_llm(query, user_id, db)
+    #answers.append({"file_id": user_id, "answer": answer})
+
+    return {"answer": answer}
