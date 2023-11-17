@@ -21,117 +21,12 @@
         </div>
 
         <div class="rightbox">
-            <div class="msgs">
-                <div class="bot-msg">
-                    <p>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                        sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                        Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-                        aliquip ex ea commodo consequat.
-                    </p>
-                </div>
-
-                <div class="user-msg">
-                    <p>
-                        Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-                        Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                    </p>
-                </div>
-                <div class="bot-msg">
-                    <p>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                        sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                        Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-                        aliquip ex ea commodo consequat.
-                    </p>
-                </div>
-
-                <div class="user-msg">
-                    <p>
-                        Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-                        Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                    </p>
-                </div>
-                <div class="bot-msg">
-                    <p>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                        sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                        Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-                        aliquip ex ea commodo consequat.
-                    </p>
-                </div>
-
-                <div class="user-msg">
-                    <p>
-                        Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-                        Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                    </p>
-                </div>
-                <div class="bot-msg">
-                    <p>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                        sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                        Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-                        aliquip ex ea commodo consequat.
-                    </p>
-                </div>
-
-                <div class="user-msg">
-                    <p>
-                        Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-                        Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                    </p>
-                </div>
-                <div class="bot-msg">
-                    <p>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                        sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                        Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-                        aliquip ex ea commodo consequat.
-                    </p>
-                </div>
-
-                <div class="user-msg">
-                    <p>
-                        Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-                        Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                    </p>
-                </div>
-                <div class="bot-msg">
-                    <p>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                        sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                        Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-                        aliquip ex ea commodo consequat.
-                    </p>
-                </div>
-
-                <div class="user-msg">
-                    <p>
-                        Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-                        Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                    </p>
-                </div>
-                <div class="bot-msg">
-                    <p>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                        sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                        Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-                        aliquip ex ea commodo consequat.
-                    </p>
-                </div>
-
-                <div class="user-msg">
-                    <p>
-                        Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-                        Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                    </p>
-                </div>
+            <div class="msgs" id="subscribe">
             </div>
 
             <div class="typing-box">
-                <form action="#" class="send">
-                    <input type="text"
+                <form id="formChat" class="send">
+                    <input type="text" id="question"
                     class="input-field"
                     placeholder="What do you want to know...">
                     <button type="submit" class="send-btn">
@@ -143,16 +38,15 @@
 
     </div>
     
-     <!-- SCRIPT FOR FILE BAR -->
-
-     <script>
+    <!-- SCRIPT FOR FILE BAR -->
+    <script>
         let fileInput = document.getElementById("file-input");
         let fileList = document.getElementById("files-list");
         let numOfFiles = document.getElementById("num-of-files");
 
         fileInput.addEventListener("change", () => {
             fileList.innerHTML = "";
-            numOfFiles.textContent = `${fileInput.files.length} 
+            numOfFiles.textContent = `${fileInput.files.length}
             Files Selected`;
 
             for (i of fileInput.files) {
@@ -169,5 +63,34 @@
                 fileList.appendChild(listItem);
             }
         });
+
+        /* script for chatting via websocket */
+        console.log('Starting the chat!')
+
+        const ws = new WebSocket('ws://{{ ws_address }}')
+
+        formChat.addEventListener('submit', (e) => {
+            e.preventDefault()
+            ws.send(question.value)
+            const elMsg = document.createElement('div')
+            elMsg.setAttribute('class', 'user-msg')
+            elMsg.innerHTML = "<p>" + question.value + "</p>"
+            subscribe.appendChild(elMsg)
+            question.value = null
+        })
+
+        ws.onopen = (e) => {
+            console.log('Chat communication intitialized!')
+        }
+
+        ws.onmessage = (e) => {
+            console.log(e.data)
+            text = e.data
+
+            const elMsg = document.createElement('div')
+            elMsg.setAttribute('class', 'bot-msg')
+            elMsg.innerHTML = "<p>" + text + "</p>"
+            subscribe.appendChild(elMsg)
+        }
     </script>
 {% endblock %}
