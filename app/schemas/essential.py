@@ -92,5 +92,20 @@ class ChatRequest(BaseModel):
     user_id: str
     file_id: int
 
+# class HistoryBase(BaseModel):
+#     user_id: int
+#     question: str
+#     answer: str
 
+
+class HistoryResponse(BaseModel):
+    id: int
+    user_id: int
+    question: str
+    answer: str
+    created_at: datetime | None
+    updated_at: datetime | None
+
+    # class ConfigDict:
+    #     from_attributes = True
 

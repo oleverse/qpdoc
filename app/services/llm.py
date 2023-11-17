@@ -62,6 +62,8 @@ class OpenAILanguageModel(LanguageModelService):
         result = qa({"question": query, "chat_history": chat_history})
         answer = result['answer']
         chat_history.append((query, answer))
+
+
         return answer
 
 
