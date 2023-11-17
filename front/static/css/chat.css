@@ -153,7 +153,13 @@ ul {
 
 .user-msg {
     background-color: #9ca3af;
-    margin: 10px 0 0 auto;
+    margin: 10px 5px 0 auto;
+}
+
+.info-msg {
+    background-color: #eddee9;
+    margin: 10px auto 0;
+    color: #6b7280 !important;
 }
 
 .typing-box {

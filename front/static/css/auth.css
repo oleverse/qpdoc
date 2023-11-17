@@ -12,11 +12,30 @@ body {
 }
 
 .wrapper {
-    padding-top: 82px;
     align-items: center;
     height: 100%;
     width: 100%;
     position: absolute;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 50px;
+    background-color: #fafafa;
+    box-shadow: 0 3px 14px #4b5563;
+    height: 112px;
+}
+
+h1 {
+    color: #4b5eb8;
+    font-size: 40px;
+}
+
+#text {
+    font-size: 30px;
+    color: #4b5eb8;
 }
 
 .form-box {
@@ -132,10 +151,10 @@ input::placeholder {
     color: #9ca3af;
 }
 
-.title {
-    font-size: 40px;
-    color: #4b5eb8;
-    background-color: #fafafa;
-    padding: 10px 0 35px 65px;
-    box-shadow: 0 3px 14px #4b5563;
+.form-box>span {
+    position: relative;
+    bottom: 0;
+    display: block;
+    text-align: center;
+    color: red;
 }

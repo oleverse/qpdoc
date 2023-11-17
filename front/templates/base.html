@@ -14,7 +14,7 @@
                 <h1 class="title">{{ title }}</h1>
                 <h2 id="text">{{ page_header }}</h2>
                 <nav>
-                    {% if request.path != '/profile' %}
+                    {% if request.path == '/chat' %}
                     <a href="/profile" class="to-profile">
                         <i class="fa-solid fa-circle-user"></i>
                     </a>

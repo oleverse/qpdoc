@@ -8,6 +8,7 @@ from app.database.models import User
 from app.database.db import get_db, SessionLocal
 
 from app.services.upload_pdf import extract_text_from_pdf, extract_text_from_docx, extract_text_from_odt, save_pdf_to_db
+from app.services.auth import auth_service
 
 router = APIRouter(prefix='/upload', tags=['upload'])
 
@@ -18,9 +19,10 @@ file_handlers = {
 }
 
 
-@router.post("/upload/")
-async def upload(files: List[UploadFile], user_id: int, db: SessionLocal = Depends(get_db)):
+@router.post("/")
+async def upload(files: List[UploadFile], user_id, db: SessionLocal = Depends(get_db)):
     db_user = db.query(User).filter(User.id == user_id).first()
+    print(db_user)
     if db_user is None:
         raise HTTPException(status_code=404, detail="User not found")
     uploaded_files_name = []

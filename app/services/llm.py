@@ -18,15 +18,15 @@ class Document:
 
 
 class LanguageModelService(ABC):
-    def __init__(self, api_key):
-        openai.api_key = api_key
-
     @abstractmethod
-    def run_llm(self, query: str):
+    def run_llm(self, query: str, user_id: int, db: SessionLocal):
         pass
 
 
 class OpenAILanguageModel(LanguageModelService):
+    def __init__(self, api_key):
+        openai.api_key = api_key
+
     def run_llm(self, query: str, user_id: int, db: SessionLocal):
         # Отримання вмісту файлу з бази даних
         user_files = db.query(PDFModel).filter(PDFModel.user_id == user_id).all()
@@ -65,4 +65,4 @@ class OpenAILanguageModel(LanguageModelService):
         return answer
 
 
-openai_service = OpenAILanguageModel(api_key=settings.openai_api_key)
+llm_service = OpenAILanguageModel(api_key=settings.openai_api_key)
