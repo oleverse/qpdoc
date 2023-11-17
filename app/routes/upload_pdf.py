@@ -1,39 +1,42 @@
-from fastapi import UploadFile, File, APIRouter, HTTPException
-from fastapi.responses import JSONResponse
+from pathlib import Path
 from typing import List
-from app.schemas.essential import PDFFile
-from app.database.db import get_db
-from app.services.upload_pdf import save_pdf_to_db, extract_text_from_docx, extract_text_from_odt, extract_text_from_pdf
+
+from fastapi import UploadFile, File, APIRouter, HTTPException, Depends
+from fastapi.responses import JSONResponse
+
+from app.database.models import User
+from app.database.db import get_db, SessionLocal
+
+from app.services.upload_pdf import extract_text_from_pdf, extract_text_from_docx, extract_text_from_odt, save_pdf_to_db
 
 router = APIRouter(prefix='/upload', tags=['upload'])
 
+file_handlers = {
+    '.pdf': extract_text_from_pdf,
+    '.docx': extract_text_from_docx,
+    '.odt': extract_text_from_odt,
+}
+
 
 @router.post("/upload/")
-async def upload(files: List[UploadFile] = File(...)):
+async def upload(files: List[UploadFile], user_id: int, db: SessionLocal = Depends(get_db)):
+    db_user = db.query(User).filter(User.id == user_id).first()
+    if db_user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    uploaded_files_name = []
+    uploaded_files_ids = []
     try:
-        db = next(get_db())
-
-        for file in files:
-            if file.filename.endswith('.pdf'):
-                text = extract_text_from_pdf(file.file)
-
-                pdf_data = PDFFile(filename=file.filename, content=text)
-                pdf_model = save_pdf_to_db(db, pdf_data)
-            elif file.filename.endswith('.docx'):
-                text = extract_text_from_docx(file.file)
-
-                pdf_data = PDFFile(filename=file.filename, content=text)
-                pdf_model = save_pdf_to_db(db, pdf_data)
-            elif file.filename.endswith('.odt'):
-                text = extract_text_from_odt(file.file)
-
-                pdf_data = PDFFile(filename=file.filename, content=text)
-                pdf_model = save_pdf_to_db(db, pdf_data)
+        for uploaded_file in files:
+            file_extension = Path(uploaded_file.filename).suffix
+            if file_extension in file_handlers:
+                text = file_handlers[file_extension](uploaded_file.file)
+                file_id = save_pdf_to_db(db, uploaded_file, text, db_user)
+                uploaded_files_ids.append(file_id)
+                uploaded_files_name.append(uploaded_file.filename)
             else:
-                raise HTTPException(status_code=400,
-                                    detail=f"Unsupported file format for {file.filename}. Please provide a PDF, DOCX, "
-                                           f"or ODT file.")
+                raise HTTPException(status_code=400, detail=f"Unsupported file format: {uploaded_file.filename}")
 
-        return JSONResponse(content={"message": "Files uploaded successfully"})
+        return JSONResponse(content={"message": "Files uploaded successfully", "files id": uploaded_files_ids,
+                                     "files name": uploaded_files_name})
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")

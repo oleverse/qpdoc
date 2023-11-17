@@ -1,7 +1,7 @@
 from datetime import datetime
-from typing import List, Optional
-from pydantic import BaseModel, Field, EmailStr, field_validator, ConfigDict, constr
-from app.conf.config import settings
+from typing import Optional
+
+from pydantic import BaseModel, Field, EmailStr, ConfigDict, constr
 
 
 class UserModel(BaseModel):
@@ -83,5 +83,14 @@ class RequestEmail(BaseModel):
 class PDFFile(BaseModel):
     filename: str
     content: str
-    user_id: Optional[int] = None
-    context: Optional[str] = None
+    user_id: Optional[int]
+    context: Optional[str]
+
+
+class ChatRequest(BaseModel):
+    query: str
+    user_id: str
+    file_id: int
+
+
+
