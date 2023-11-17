@@ -28,7 +28,8 @@
                 <form id="formChat" class="send">
                     <input type="text" id="question"
                     class="input-field"
-                    placeholder="What do you want to know...">
+                    placeholder="What do you want to know..."
+                    autocomplete="off">
                     <button type="submit" class="send-btn">
                         <i class="fa-solid fa-circle-arrow-up"></i>
                     </button>
@@ -67,30 +68,54 @@
         /* script for chatting via websocket */
         console.log('Starting the chat!')
 
-        const ws = new WebSocket('ws://{{ ws_address }}')
+        function startWebsocket() {
+            let ws = null
+            try {
+                ws = new WebSocket('ws://{{ ws_address }}')
+            } catch (err) {
+                console.log('Failed to connect to the ws endpoint, retrying...')
+                return
+            }
 
-        formChat.addEventListener('submit', (e) => {
-            e.preventDefault()
-            ws.send(question.value)
-            const elMsg = document.createElement('div')
-            elMsg.setAttribute('class', 'user-msg')
-            elMsg.innerHTML = "<p>" + question.value + "</p>"
-            subscribe.appendChild(elMsg)
-            question.value = null
-        })
+            ws.onopen = (e) => {
+                console.log('Chat communication intitialized!')
 
-        ws.onopen = (e) => {
-            console.log('Chat communication intitialized!')
+                formChat.addEventListener('submit', (e) => {
+                    e.preventDefault()
+                    ws.send(question.value)
+
+                    const elMsg = document.createElement('div')
+                    elMsg.setAttribute('class', 'user-msg')
+                    elMsg.innerHTML = "<p>" + question.value + "</p>"
+                    subscribe.appendChild(elMsg)
+                    question.value = null
+                    subscribe.scrollTo({
+                        top: subscribe.scrollHeight,
+                        behavior: 'smooth'
+                    });
+                })
+            }
+
+            ws.onmessage = (e) => {
+                // console.log(e.data)
+                text = e.data
+
+                const elMsg = document.createElement('div')
+                elMsg.setAttribute('class', 'bot-msg')
+                elMsg.innerHTML = "<p>" + text + "</p>"
+                subscribe.appendChild(elMsg)
+                subscribe.scrollTo({
+                    top: subscribe.scrollHeight,
+                    behavior: 'smooth'
+                });
+            }
+
+            ws.onclose = () => {
+                setTimeout(startWebsocket, 5000)
+            }
         }
 
-        ws.onmessage = (e) => {
-            console.log(e.data)
-            text = e.data
+        startWebsocket()
 
-            const elMsg = document.createElement('div')
-            elMsg.setAttribute('class', 'bot-msg')
-            elMsg.innerHTML = "<p>" + text + "</p>"
-            subscribe.appendChild(elMsg)
-        }
     </script>
 {% endblock %}
