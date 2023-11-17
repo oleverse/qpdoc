@@ -132,32 +132,28 @@ ul {
 
 .msgs {
     overflow: auto;
-    max-height: 555px;
+    height: 555px;
     margin-top: 10px;
 }
 
-.bot-msg {
+.msgs>div {
     max-width: 70%;
-    font-size: 15px;
-    background-color: #4b5eb8;
-    color: #fafafa;
+    font-size: 18px;
     border-radius: 15px;
-    padding: 10px;
-    margin: 10px 0 0 5px;
+    width: fit-content;
     hyphens: auto;
-    float: left;
+    padding: 10px;
+    color: #fafafa;
+}
+
+.bot-msg {
+    background-color: #4b5eb8;
+    margin: 10px 0 0 5px;
 }
 
 .user-msg {
-    float: right;
-    max-width: 70%;
-    font-size: 15px;
     background-color: #9ca3af;
-    color: #fafafa;
-    border-radius: 15px;
-    padding: 10px;
-    margin: 10px 0 0 5px;
-    hyphens: auto;
+    margin: 10px 0 0 auto;
 }
 
 .typing-box {
@@ -172,7 +168,7 @@ ul {
 }
 
 .input-field {
-    font-size: 15px;
+    font-size: 18px;
     width: 90%;
     padding-top: 10px;
     outline: none;

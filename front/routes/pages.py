@@ -1,10 +1,9 @@
 from pathlib import Path
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Request, WebSocket
 from fastapi.templating import Jinja2Templates
 
 from fastapi.responses import HTMLResponse, RedirectResponse
-
-# from conf.config import get_settings
+from app.conf.config import settings
 
 # credential_paths = get_settings()
 
@@ -25,7 +24,7 @@ app_title = {
 
 
 @router.get('/profile', response_class=HTMLResponse)
-def get_profile_page(request: Request):
+async def get_profile_page(request: Request):
     return templates.TemplateResponse('profile.html',
                                       {
                                           'request': request,
@@ -35,7 +34,7 @@ def get_profile_page(request: Request):
 
 
 @router.get('/auth', response_class=HTMLResponse)
-def get_auth_page(request: Request):
+async def get_auth_page(request: Request):
     return templates.TemplateResponse('auth.html', {
         'request': request,
         'title': app_title[request['path']]
@@ -43,7 +42,7 @@ def get_auth_page(request: Request):
 
 
 @router.get('/login', response_class=HTMLResponse)
-def get_login_page(request: Request):
+async def get_login_page(request: Request):
     return templates.TemplateResponse('auth.html', {
                                           'request': request,
                                           'title': app_title[request['path']]
@@ -51,18 +50,27 @@ def get_login_page(request: Request):
 
 
 @router.get('/register')
-def get_register_page(request: Request):
+async def get_register_page(request: Request):
     return templates.TemplateResponse('auth.html', {
                                           'request': request,
                                           'title': app_title[request['path']]
                                       })
 
 
+@router.websocket('/')
+async def websocket_endpoint(websocket: WebSocket):
+    await websocket.accept()
+    while True:
+        data = await websocket.receive_text()
+        await websocket.send_text(f"Lorem ipsum dolor sit amet")
+
+
 @router.get('/')
-def get_chat_page(request: Request):
+async def get_chat_page(request: Request):
     return templates.TemplateResponse('chat.html',
                                       {
                                           'request': request,
                                           'title': app_title[request['path']],
-                                          'page_header': 'Query Processed Documents Chat'
+                                          'page_header': 'Query Processed Documents Chat',
+                                          'ws_address': f'localhost:{settings.app_port}'
                                       })

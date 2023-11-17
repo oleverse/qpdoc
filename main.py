@@ -2,7 +2,7 @@ from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 from starlette.staticfiles import StaticFiles
 
-
+from app.conf.config import settings
 # from app.routes import auth, search, profile, users
 from front.routes import pages
 from app.routes import auth, profile, upload_pdf, llm_endpoint
@@ -45,4 +45,4 @@ if __name__ == '__main__':
     # uvicorn.run("main:app", host='0.0.0.0', ssl_keyfile='key.pem', ssl_certfile='cert.pem')
 
     # development doesn't need SSL
-    uvicorn.run("main:app", reload=True)
+    uvicorn.run("main:app", reload=True, port=settings.app_port)
