@@ -6,7 +6,7 @@ from passlib.context import CryptContext
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 from app.database.models import User
-# from app.database.models import BlacklistToken
+from app.database.models import BlacklistToken
 from jose import JWTError, jwt
 
 from app.database.db import get_db
@@ -27,10 +27,8 @@ class Auth:
         return self.pwd_context.hash(password)
 
     async def jwt_check_and_decode(self, token: str, db: Session):
-        # blacklisted_token = db.query(BlacklistToken).filter(token == BlacklistToken.token).first()
+        blacklisted_token = db.query(BlacklistToken).filter(token == BlacklistToken.token).first()
 
-        # yet disable blacklisting...
-        blacklisted_token = False
         if not blacklisted_token:
             return jwt.decode(token, self.SECRET_KEY, algorithms=[self.ALGORITHM])
         raise JWTError

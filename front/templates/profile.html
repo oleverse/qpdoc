@@ -20,20 +20,20 @@
 
         <div class="centerbox">
             <div class="profile">
-                <h2>Username</h2>
-                <h3>email</h3>
+                <h2>{{user_name}}</h2>
+                <h3>{{user_email}}</h3>
 
                 <form action="#" class="change-name">
                     <p id="rename">Змінити ім'я користувача</p>
                     <input type="text"
-                    id="username"
+                    id="new_username"
                     class="input-field"
-                    placeholder="New username" required>
+                    placeholder="{{user_name}}" required autocomplete="off">
                     <button type="submit"
                     class="name-btn">Rename</button>
                 </form>
 
-                <form action="#" class="logout">
+                <form action="/logout_user" method="get" class="logout">
                     <p>
                         <button type="submit"
                         class="logout-btn">Logout</button>

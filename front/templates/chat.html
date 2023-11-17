@@ -9,8 +9,8 @@
     <div class="container">
 
         <div class="leftbox">
-            <form action="#" class="add-pdf">
-                <input type="file" id="file-input" multiple>
+            <form action="/upload" method="post" id="uploadForm" enctype="multipart/form-data" class="add-pdf" >
+                <input type="file" id="file-input" name="files" accept=".pdf, .docx, .odt" multiple>
                 <label for="file-input">
                     <i class="fa-solid fa-arrow-up-from-bracket"></i>
                     &nbsp; Choose PDF
@@ -63,6 +63,8 @@
                 }
                 fileList.appendChild(listItem);
             }
+
+            uploadForm.submit()
         });
 
         /* script for chatting via websocket */
@@ -77,13 +79,11 @@
                 return
             }
 
-            ws.onopen = (e) => {
-                console.log('Chat communication intitialized!')
+            function submitForm(e) {
+                e.preventDefault()
 
-                formChat.addEventListener('submit', (e) => {
-                    e.preventDefault()
-                    ws.send(question.value)
-
+                if (question.value) {
+                    ws.send('{"user_id": {{user_id}}, "message": "' + question.value + '"}')
                     const elMsg = document.createElement('div')
                     elMsg.setAttribute('class', 'user-msg')
                     elMsg.innerHTML = "<p>" + question.value + "</p>"
@@ -93,16 +93,41 @@
                         top: subscribe.scrollHeight,
                         behavior: 'smooth'
                     });
-                })
+                }
+            }
+
+            ws.onopen = (e) => {
+                console.log('Chat communication intitialized!')
+
+                const elMsg = document.createElement('div')
+                elMsg.setAttribute('class', 'info-msg')
+                elMsg.innerHTML = "<p>We're online, let's talk!</p>"
+                subscribe.appendChild(elMsg)
+                subscribe.style.border = "none"
+                subscribe.scrollTo({
+                    top: subscribe.scrollHeight,
+                    behavior: 'smooth'
+                });
+
+                formChat.addEventListener('submit', submitForm)
+                formChat.getElementsByClassName("send-btn")[0].disabled = false;
+                question.readOnly = false;
+                question.setAttribute("placeholder", "What do you want to know...")
+                document.getElementsByClassName("typing-box")[0].style.borderColor = "#4b5eb8"
             }
 
             ws.onmessage = (e) => {
-                // console.log(e.data)
-                text = e.data
-
+                console.log(e.data)
+                data = JSON.parse(e.data);
                 const elMsg = document.createElement('div')
                 elMsg.setAttribute('class', 'bot-msg')
-                elMsg.innerHTML = "<p>" + text + "</p>"
+                elMsg.innerHTML = "<p>" + data.message + "</p>"
+
+                if (data.code == 403) {
+                    elMsg.innerHTML += " Redirecting in 3 secs..."
+                    setTimeout(() => {document.location = "/login"}, 3000)
+                }
+
                 subscribe.appendChild(elMsg)
                 subscribe.scrollTo({
                     top: subscribe.scrollHeight,
@@ -111,6 +136,20 @@
             }
 
             ws.onclose = () => {
+                formChat.removeEventListener('submit', submitForm)
+                formChat.getElementsByClassName("send-btn")[0].disabled = true;
+                question.readOnly = true
+                question.setAttribute("placeholder", "No connection, chat is disabled...")
+                document.getElementsByClassName("typing-box")[0].style.borderColor = "#ba0000"
+                const elMsg = document.createElement('div')
+                elMsg.setAttribute('class', 'info-msg')
+                elMsg.innerHTML = "<p>Connection lost, reconnecting in 5 secs...</p>"
+                subscribe.appendChild(elMsg)
+                subscribe.style.border = "2px solid #ba0000"
+                subscribe.scrollTo({
+                    top: subscribe.scrollHeight,
+                    behavior: 'smooth'
+                });
                 setTimeout(startWebsocket, 5000)
             }
         }
