@@ -4,6 +4,7 @@ from fastapi.templating import Jinja2Templates
 
 from fastapi.responses import HTMLResponse, RedirectResponse
 from app.conf.config import settings
+from app.routes.llm_endpoint import llm_endpoint
 
 # credential_paths = get_settings()
 
@@ -57,14 +58,6 @@ async def get_register_page(request: Request):
                                       })
 
 
-@router.websocket('/')
-async def websocket_endpoint(websocket: WebSocket):
-    await websocket.accept()
-    while True:
-        data = await websocket.receive_text()
-        await websocket.send_text(f"Lorem ipsum dolor sit amet")
-
-
 @router.get('/')
 async def get_chat_page(request: Request):
     return templates.TemplateResponse('chat.html',
@@ -74,3 +67,12 @@ async def get_chat_page(request: Request):
                                           'page_header': 'Query Processed Documents Chat',
                                           'ws_address': f'localhost:{settings.app_port}'
                                       })
+
+
+@router.websocket('/')
+async def websocket_endpoint(websocket: WebSocket):
+    await websocket.accept()
+    while True:
+        data = await websocket.receive_text()
+        llm_data = await llm_endpoint(data)
+        await websocket.send_text(llm_data['answer'])
