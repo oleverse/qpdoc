@@ -7,7 +7,6 @@
 
 body {
     background-color: #4b5eb8;
-    overflow: hidden;
     box-sizing: border-box;
     font-family: Verdana;
 }
@@ -19,12 +18,12 @@ header {
     padding: 10px 50px;
     background-color: #fafafa;
     box-shadow: 0 3px 14px #4b5563;
+    height: 112px;
 }
 
 h1 {
     color: #4b5eb8;
     font-size: 40px;
-    padding: 10px 0 35px 65px;
 }
   
 #text {
@@ -49,10 +48,9 @@ h1 {
     background-color: #fafafa;
     width: 800px;
     height: 700px;
-    margin: 0 auto;
+    margin: 50px auto 0;
     position: relative;
     border-radius: 15px;
-    margin-top: 8%;
 }
   
 .leftbox {
@@ -127,12 +125,18 @@ ul {
 }
 
 .rightbox {
-    position: relative;
-    padding: 10px;
+    padding: 10px 10px 15px;
+    border-bottom: 1px solid #4b5eb8;
+    margin: 0 15px;
+}
+
+.msgs {
+    overflow: auto;
+    max-height: 555px;
+    margin-top: 10px;
 }
 
 .bot-msg {
-    display: flex;
     max-width: 70%;
     font-size: 15px;
     background-color: #4b5eb8;
@@ -141,11 +145,10 @@ ul {
     padding: 10px;
     margin: 10px 0 0 5px;
     hyphens: auto;
+    float: left;
 }
 
 .user-msg {
-    flex: 1;
-    display: flex;
     float: right;
     max-width: 70%;
     font-size: 15px;
@@ -159,13 +162,13 @@ ul {
 
 .typing-box {
     position: absolute;
-    width: 90%;
+    width: 746px;
     text-align: center;
     border: 2px solid #4b5eb8;
     border-radius: 15px;
     padding: 20px 10px;
-    margin-top: 480px;
-    margin-left: 30px;
+    bottom: 15px;
+    left: 27px;
 }
 
 .input-field {

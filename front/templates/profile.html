@@ -3,25 +3,16 @@
     <title>{{ title }}</title>
 {% endblock %}
 {% block style_file %}
-    <link rel="stylesheet" 
+    <link rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', path='/css/profile.css') }}">
 {% endblock %}
 {% block content %}
-    <header>
-        <h1>
-            qpdoc
-        </h1>
-        <h2 id="user">
-            User profile
-        </h2>
-        
-    </header>
 
     <div class="container">
         <div class="leftbox">
             <nav>
-                <a href="#" class="chat">
+                <a href="/" class="chat">
                     <i class="fa-solid fa-comment-dots"></i>
                 </a>
             </nav>
@@ -70,6 +61,7 @@
                 <ul id="files-list"></ul>
             </div>
         </form>
+    </div>
 
     <!-- SCRIPT FOR FILE BAR -->
 

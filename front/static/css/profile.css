@@ -1,6 +1,12 @@
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    font-family: Verdana;
+}
+
 body {
   background-color: #fafafa;
-  overflow: hidden;
   box-sizing: border-box;
   font-family: Verdana;
 }
@@ -195,10 +201,8 @@ ul {
 }
 
 h1 {
-  color: #4b5eb8;
-  font-size: 70px;
-  margin-top: 20px;
-  margin-left: 60px;
+  color: #fafafa;
+  font-size: 40px;
 }
 
 header {
@@ -206,14 +210,12 @@ header {
   justify-content: space-between;
   align-items: center;
   padding: 10px 50px;
+  height: 112px;
   background-color: #4b5eb8;
+  box-shadow: 0 3px 14px #fafafa;
 }
 
-#user {
-  text-align: center;
-  font-size: 30px;
-  padding: 10px;
-
-  background-color: #4b5eb8;
-  color: #fafafa;
+#text {
+    font-size: 30px;
+    color: #fafafa;
 }

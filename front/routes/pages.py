@@ -17,9 +17,9 @@ templates = Jinja2Templates(directory=template_dir)
 
 app_title_main = 'QPDoc'
 app_title = {
-    '/profile': f'{app_title_main}: user profile',
-    '/': f'{app_title_main}: chat',
-    '/chat': f'{app_title_main}: chat',
+    '/profile': f'{app_title_main}',
+    '/': f'{app_title_main}',
+    '/chat': f'{app_title_main}',
     '/auth': f'{app_title_main}: login',
 }
 
@@ -29,7 +29,8 @@ def get_profile_page(request: Request):
     return templates.TemplateResponse('profile.html',
                                       {
                                           'request': request,
-                                          'title': app_title[request['path']]
+                                          'title': app_title[request['path']],
+                                          'page_header': 'User profile'
                                       })
 
 
@@ -62,5 +63,6 @@ def get_chat_page(request: Request):
     return templates.TemplateResponse('chat.html',
                                       {
                                           'request': request,
-                                          'title': app_title[request['path']]
+                                          'title': app_title[request['path']],
+                                          'page_header': 'Query Processed Documents Chat'
                                       })
