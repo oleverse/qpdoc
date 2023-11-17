@@ -1,13 +1,20 @@
 from abc import ABC, abstractmethod
-from pathlib import Path
 import openai
-from langchain.document_loaders import PyPDFLoader
 from langchain.embeddings import OpenAIEmbeddings
 from langchain.vectorstores import FAISS
 from langchain.chains import ConversationalRetrievalChain
 from langchain.chat_models import ChatOpenAI
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from app.conf.config import settings
+
+from app.database.db import SessionLocal
+from app.database.models import PDFModel
+
+
+class Document:
+    def __init__(self, page_content, metadata=None):
+        self.page_content = page_content
+        self.metadata = metadata or {}
 
 
 class LanguageModelService(ABC):
@@ -20,15 +27,18 @@ class LanguageModelService(ABC):
 
 
 class OpenAILanguageModel(LanguageModelService):
-    def run_llm(self, query: str):
-        dir_path = Path.cwd()
-        path = str(Path(dir_path, "data", "ext.pdf"))
+    def run_llm(self, query: str, user_id: int, db: SessionLocal):
+        # Отримання вмісту файлу з бази даних
+        user_files = db.query(PDFModel).filter(PDFModel.user_id == user_id).all()
 
-        loader = PyPDFLoader(path)
-        pages = loader.load()
+        if not user_files:
+            raise ValueError("Файли користувача не знайдено")
+        all_file_content = " ".join([file.content for file in user_files])
 
+        # Векторизація тексту
         text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
-        chunks = text_splitter.split_documents(documents=pages)
+        doc = Document(all_file_content)
+        chunks = text_splitter.split_documents(documents=[doc])
 
         embeddings = OpenAIEmbeddings(openai_api_key=settings.openai_api_key)
         index_name = "const-index-react"
@@ -55,7 +65,4 @@ class OpenAILanguageModel(LanguageModelService):
         return answer
 
 
-# Example usage
 openai_service = OpenAILanguageModel(api_key=settings.openai_api_key)
-#result = openai_service.run_llm(input("Ваше питання: "))
-#print(f"Answer: {result}")

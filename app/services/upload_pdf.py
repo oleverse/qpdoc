@@ -1,55 +1,36 @@
-import PyPDF2
+import docx
+from PyPDF2 import PdfReader
+from fastapi import UploadFile
 
-from app.schemas.essential import PDFFile
-from app.database.models import PDFModel
-from sqlalchemy.orm import Session
-# import fitz
-from docx import Document
 from odf import text, teletype
 from odf.opendocument import load
-import io
+
+from app.database.db import SessionLocal
+from app.database.models import User, PDFModel
 
 
-def save_pdf_to_db(db, pdf_data):
-    db_pdf = PDFModel(filename=pdf_data.filename, content=pdf_data.content)
-    db.add(db_pdf)
-    db.commit()
-    db.refresh(db_pdf)
-    return db_pdf
-
-
-# Можна не використовувати fitz
-# def extract_text_from_pdf(file):
-#     pdf_document = fitz.open(file)
-#     text = ""
-#     for page_number in range(pdf_document.page_count):
-#         page = pdf_document[page_number]
-#         text += page.get_text()
-#     return text
-# Робота з PDF
-def extract_text_from_pdf(file):
-    file_content = file.read()
-    pdf_stream = io.BytesIO(file_content)
-    pdf_reader = PyPDF2.PdfReader(pdf_stream)
-    text = ""
-    for page_number in range(len(pdf_reader.pages)):
-        text += pdf_reader.pages[page_number].extract_text()
+def extract_text_from_pdf(file_stream):
+    reader = PdfReader(file_stream)
+    text = "".join([page.extract_text() for page in reader.pages])
     return text
 
 
-# Робота з DOCX
-def extract_text_from_docx(file):
-    doc = Document(file)
-    text = ""
-    for paragraph in doc.paragraphs:
-        text += paragraph.text + " "
-    return text.strip()
+def extract_text_from_docx(file_stream):
+    doc = docx.Document(file_stream)
+    text = "\n".join([paragraph.text for paragraph in doc.paragraphs])
+    return text
 
 
 # Робота з ODT
-def extract_text_from_odt(file):
-    doc = load(file)
-    text_content = []
-    for text_node in doc.getElementsByType(text.P):
-        text_content.append(teletype.extractText(text_node))
-    return " ".join(text_content).strip()
+def extract_text_from_odt(file_stream):
+    document = load(file_stream)
+    all_texts = document.getElementsByType(text.P)
+    return " ".join(teletype.extractText(t) for t in all_texts)
+
+
+def save_pdf_to_db(db: SessionLocal, uploaded_file: UploadFile, text: str, db_user: User) -> int:
+    new_pdf = PDFModel(filename=uploaded_file.filename, content=text, user=db_user)
+    db.add(new_pdf)
+    db.commit()
+    db.refresh(new_pdf)
+    return new_pdf.id
