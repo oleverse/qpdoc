@@ -21,3 +21,23 @@ async def create_record(user_id: int, query, answer, db: Session):
 
 async def get_history_for_user(user_id: int, db: Session):
     return db.query(History).filter(and_(History.user_id == user_id)).all()
+
+
+async def remove_history(id: int, db: Session):
+    # history = await db.execute(
+    #     select(History).join(User, User.id == History)
+    # )
+    #
+    history = db.query(History).filter(and_(History.user_id == id)).all()
+    if history:
+        print(f'777777 {history}')
+        for i in history:
+            db.delete(i)
+            db.commit()
+
+    if history is None:
+        raise HTTPException(status_code=404, detail="History not found")
+
+    # print(f'444444 {history}')
+
+

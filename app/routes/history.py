@@ -24,3 +24,14 @@ async def get_history_for_user(user_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="History not found")
     return history
 
+
+@router.delete("/{user_id}")
+async def remove_history(user_id: int, db: Session = Depends(get_db)):
+    db_user = db.query(User).filter(User.id == user_id).first()
+    if db_user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    # history = await repository_history.remove_history(user_id, db)
+    # if history is None:
+    #     raise HTTPException(status_code=404, detail="History not found")
+    return await repository_history.remove_history(user_id, db)
