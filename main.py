@@ -45,4 +45,4 @@ if __name__ == '__main__':
     # uvicorn.run("main:app", host='0.0.0.0', ssl_keyfile='key.pem', ssl_certfile='cert.pem')
 
     # development doesn't need SSL
-    uvicorn.run("main:app", reload=True, port=settings.app_port)
+    uvicorn.run("main:app", reload=True, port=settings.app_port, host='0.0.0.0', ssl_keyfile='key.pem', ssl_certfile='cert.pem')
