@@ -3,6 +3,8 @@ from fastapi import APIRouter, HTTPException, Depends
 from app.database.db import get_db, SessionLocal
 from app.database.models import PDFModel, User
 from app.services.llm import llm_service
+import app.repository.histories as repository_history
+
 
 load_dotenv()
 router = APIRouter(prefix='/llm', tags=['llm'])
@@ -22,6 +24,10 @@ async def llm_endpoint(query: str, user_id: int, db: SessionLocal = Depends(get_
     # for file in user_files:
     # Передаємо ID кожного файлу у функцію чат-бота
     answer = llm_service.run_llm(query, user_id, db)
+    new_record = await repository_history.create_record(user_id, query, answer, db)
+    print(f'q: {query}')
+    print(answer)
+    print(new_record)
     # answers.append({"file_id": user_id, "answer": answer})
 
     return {"answer": answer}
