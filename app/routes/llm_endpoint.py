@@ -25,9 +25,6 @@ async def llm_endpoint(query: str, user_id: int, db: SessionLocal = Depends(get_
     # Передаємо ID кожного файлу у функцію чат-бота
     answer = llm_service.run_llm(query, user_id, db)
     new_record = await repository_history.create_record(user_id, query, answer, db)
-    print(f'q: {query}')
-    print(answer)
-    print(new_record)
     # answers.append({"file_id": user_id, "answer": answer})
 
     return {"answer": answer}
