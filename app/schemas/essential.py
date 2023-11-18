@@ -93,4 +93,10 @@ class ChatRequest(BaseModel):
     file_id: int
 
 
-
+class HistoryResponse(BaseModel):
+    id: int
+    user_id: int
+    question: str
+    answer: str
+    created_at: datetime | None
+    updated_at: datetime | None
