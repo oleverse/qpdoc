@@ -30,14 +30,11 @@ async def remove_history(id: int, db: Session):
     #
     history = db.query(History).filter(and_(History.user_id == id)).all()
     if history:
-        print(f'777777 {history}')
         for i in history:
             db.delete(i)
             db.commit()
 
     if history is None:
         raise HTTPException(status_code=404, detail="History not found")
-
-    # print(f'444444 {history}')
 
 
