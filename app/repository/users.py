@@ -41,6 +41,11 @@ async def create_user(body: UserModel, db: Session):
         email=body.email,
         password=body.password,
         avatar=avatar,
+
+        # for debug and testing purposes
+        is_active=True,
+        confirmed=True,
+
         role_id=role.id
     )
     # new_user = User(**body.model_dump(), avatar=avatar)

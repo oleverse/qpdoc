@@ -49,7 +49,11 @@ class OpenAILanguageModel(LanguageModelService):
         embeddings = OpenAIEmbeddings(openai_api_key=settings.openai_api_key)
         index_name = "const-index-react"
 
-        last_history_file_id = await get_last_history_file_id(user_id, db)
+        try:
+            last_history_file_id = await get_last_history_file_id(user_id, db)
+        except AttributeError:
+            last_history_file_id = None
+
         if last_history_file_id != file_id:
             if os.path.exists(index_name):
                 shutil.rmtree(index_name, ignore_errors=True)
