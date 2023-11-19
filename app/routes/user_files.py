@@ -1,5 +1,4 @@
 from app.database.models import User
-from app.schemas.essential import UserFile
 from app.services.auth import auth_service
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
