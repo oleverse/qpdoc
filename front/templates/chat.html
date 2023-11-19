@@ -10,10 +10,11 @@
 
         <div class="leftbox">
             <form action="/upload" method="post" id="uploadForm" enctype="multipart/form-data" class="add-pdf" >
-                <input type="file" id="file-input" name="files" accept=".pdf, .docx, .odt" multiple>
+                <input type="file" id="file-input" name="files"
+                       accept=".pdf, .docx, .odt" multiple>
                 <label for="file-input">
                     <i class="fa-solid fa-arrow-up-from-bracket"></i>
-                    &nbsp; Choose PDF
+                    &nbsp; Upload file <span style="display: block">(pdf, docx, docx)</span>
                 </label>
                 <div id="num-of-files">No Files Coosen</div>
                 <ul id="files-list"></ul>
@@ -37,10 +38,67 @@
             </div>
         </div>
 
+        <div class="view-wrapper">
+            <div class="file-selector-wrapper">
+                {% if user_files %}
+                <select id="fileSelector">
+                    <option value="0">Choose a file for the context...</option>
+                    {% for user_file in user_files %}
+                    <option value="{{user_file.id}}">{{user_file.filename}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="file-content">
+                <textarea id="fileContent"></textarea>
+                {% else %}
+                    <span>You don't have any files yet.</span>
+                {% endif %}
+            </div>
+        </div>
+
     </div>
-    
-    <!-- SCRIPT FOR FILE BAR -->
+
     <script>
+        /* Script for file selector */
+        function getCookie(cname) {
+            let name = cname + "=";
+            let decodedCookie = decodeURIComponent(document.cookie);
+            let ca = decodedCookie.split(';');
+            for(let i = 0; i <ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) == ' ') {
+                    c = c.substring(1);
+                }
+                if (c.indexOf(name) == 0) {
+                    return c.substring(name.length, c.length);
+                }
+            }
+            return "";
+        }
+
+        fileSelector.addEventListener('change', (e) => {
+            e.preventDefault()
+
+            if (parseInt(e.target.value)) {
+                fileContent.style.display = "inline-block"
+
+                fetch("/api/user_files/" + e.target.value, {
+                    method: "GET",
+                    headers: {
+                        Authorization: getCookie("access_token").replaceAll('"', '')
+                    },
+                })
+                .then(resp => resp.json())
+                .then(json => {
+                    let userFileContent = JSON.stringify(json)
+                    fileContent.value = userFileContent.substring(1, userFileContent.length - 1)
+                })
+            } else {
+                fileContent.style.display = "none"
+            }
+        })
+
+        /* Script for file bar */
         let fileInput = document.getElementById("file-input");
         let fileList = document.getElementById("files-list");
         let numOfFiles = document.getElementById("num-of-files");
@@ -82,8 +140,18 @@
             function submitForm(e) {
                 e.preventDefault()
 
-                if (question.value) {
-                    ws.send('{"user_id": {{user_id}}, "message": "' + question.value + '"}')
+                if (parseInt(fileSelector.value) == 0) {
+                    const elMsg = document.createElement('div')
+                    elMsg.setAttribute('class', 'info-msg')
+                    elMsg.innerHTML = "<p>You should choose a file for the context!</p>"
+                    subscribe.appendChild(elMsg)
+                    subscribe.scrollTo({
+                        top: subscribe.scrollHeight,
+                        behavior: 'smooth'
+                    });
+                } else if (question.value) {
+                    ws.send('{"user_id": {{user.id}}, "file_id": ' + parseInt(fileSelector.value) + ', "message": "'
+                       + question.value.replaceAll('"', '\\\"') + '"}')
                     const elMsg = document.createElement('div')
                     elMsg.setAttribute('class', 'user-msg')
                     elMsg.innerHTML = "<p>" + question.value + "</p>"
@@ -117,22 +185,25 @@
             }
 
             ws.onmessage = (e) => {
-                console.log(e.data)
-                data = JSON.parse(e.data);
-                const elMsg = document.createElement('div')
-                elMsg.setAttribute('class', 'bot-msg')
-                elMsg.innerHTML = "<p>" + data.message + "</p>"
+                try {
+                    data = JSON.parse(e.data);
+                    const elMsg = document.createElement('div')
+                    elMsg.setAttribute('class', 'bot-msg')
+                    elMsg.innerHTML = "<p>" + data.message + "</p>"
 
-                if (data.code == 403) {
-                    elMsg.innerHTML += " Redirecting in 3 secs..."
-                    setTimeout(() => {document.location = "/login"}, 3000)
+                    if (data.code == 403) {
+                        elMsg.innerHTML += " Redirecting in 3 secs..."
+                        setTimeout(() => {document.location = "/login"}, 3000)
+                    }
+
+                    subscribe.appendChild(elMsg)
+                    subscribe.scrollTo({
+                        top: subscribe.scrollHeight,
+                        behavior: 'smooth'
+                    });
+                } catch (err) {
+                    console.log(err)
                 }
-
-                subscribe.appendChild(elMsg)
-                subscribe.scrollTo({
-                    top: subscribe.scrollHeight,
-                    behavior: 'smooth'
-                });
             }
 
             ws.onclose = () => {

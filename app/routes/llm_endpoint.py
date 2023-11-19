@@ -11,7 +11,7 @@ router = APIRouter(prefix='/llm', tags=['llm'])
 
 
 @router.post("/chat")
-async def llm_endpoint(query: str, user_id: int, db: SessionLocal = Depends(get_db)):
+async def llm_endpoint(query: str, user_id: int, file_id: int, db: SessionLocal = Depends(get_db)):
     # Знаходимо всі файли, що належать даному користувачу
     # user_files = db.query(PDFModel).filter(PDFModel.user_id == user_id).all()
 
@@ -23,8 +23,8 @@ async def llm_endpoint(query: str, user_id: int, db: SessionLocal = Depends(get_
 
     # for file in user_files:
     # Передаємо ID кожного файлу у функцію чат-бота
-    answer = llm_service.run_llm(query, user_id, db)
-    new_record = await repository_history.create_record(user_id, query, answer, db)
+    answer = await llm_service.run_llm(query, user_id, file_id, db)
+    new_record = await repository_history.create_record(user_id, file_id, query, answer, db)
     # answers.append({"file_id": user_id, "answer": answer})
 
     return {"answer": answer}

@@ -67,7 +67,7 @@ async def login(response: Response, body: OAuth2PasswordRequestForm = Depends(),
 
     await repository_users.update_token(user, refresh_token, db)
 
-    response.set_cookie(key="access_token", value=f"Bearer {access_token}", httponly=True)
+    response.set_cookie(key="access_token", value=f"Bearer {access_token}", httponly=False)
 
     return {"access_token": access_token, "refresh_token": refresh_token, "token_type": "bearer"}
 
