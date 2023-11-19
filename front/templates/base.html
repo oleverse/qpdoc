@@ -16,7 +16,8 @@
                 <nav>
                     {% if request.path == '/chat' %}
                     <a href="/profile" class="to-profile">
-                        <i class="fa-solid fa-circle-user"></i>
+                        <img src="{{user.avatar}}" height="70px" width="70px" />
+                        <div>{{user.username}}</div>
                     </a>
                     {% endif %}
                 </nav>
