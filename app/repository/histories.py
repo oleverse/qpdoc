@@ -30,7 +30,8 @@ async def get_history_for_user(user_id: int, db: Session):
 
 
 async def get_history_for_user_by_file(user_id: int, file_id, db: Session):
-    return db.query(History).filter(and_(History.user_id == user_id, History.file_id == file_id)).all()
+    return db.query(History).filter(and_(History.user_id == user_id, History.file_id == file_id))\
+        .order_by(History.id).limit(100).all()
 
 
 async def remove_history(id: int, db: Session):

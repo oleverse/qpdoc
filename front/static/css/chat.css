@@ -219,10 +219,12 @@ ul {
 
 .file-selector-wrapper {
     border: 3px solid #fafafa;
+    color: #fafafa;
     border-radius: 20px;
     padding: 20px 1px;
     text-align: center;
     background-color: #4b5eb8;
+    font-size: 20px;
 }
 
 .file-selector-wrapper>select {

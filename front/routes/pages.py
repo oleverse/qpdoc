@@ -25,6 +25,7 @@ from psycopg2 import IntegrityError
 from app.repository.users import user_exists
 
 from app.repository.users import add_to_blacklist
+from app.routes.upload_pdf import file_handlers
 
 
 router = APIRouter(tags=['pages'])
@@ -152,7 +153,8 @@ async def get_chat_page(request: Request, db: Session = Depends(get_db)):
                                               'page_header': 'Query Processed Documents Chat',
                                               'ws_address': f'localhost:{settings.app_port}',
                                               'user': logged_in_user,
-                                              'user_files': user_files
+                                              'user_files': user_files,
+                                              'supported_file_formats': ', '.join(file_handlers)
                                           })
 
 
@@ -172,8 +174,11 @@ async def get_main_page(request: Request, db: Session = Depends(get_db)):
 async def websocket_endpoint(websocket: WebSocket, db: Session = Depends(get_db)):
     await websocket.accept()
     while True:
-        # try:
-        data = await websocket.receive_text()
+        try:
+            data = await websocket.receive_text()
+        except (RuntimeError, WebSocketDisconnect):
+            return False
+
         data = json.loads(data)
 
         if not await user_exists(data["user_id"], db):
@@ -196,8 +201,6 @@ async def websocket_endpoint(websocket: WebSocket, db: Session = Depends(get_db)
                     "message": error
                 }
                 await websocket.send_text(json.dumps(answer))
-        # except (RuntimeError, WebSocketDisconnect):
-        #     await websocket.close()
 
 
 @router.get("/logout_user")

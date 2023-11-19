@@ -8,7 +8,6 @@ from sqlalchemy import Column, Integer, String, func, ForeignKey, Boolean, Table
 from sqlalchemy.future import engine
 from sqlalchemy.sql.sqltypes import DateTime
 from sqlalchemy.orm import relationship, declarative_base, column_property
-from sqlalchemy.testing.pickleable import User
 
 Base = declarative_base()
 

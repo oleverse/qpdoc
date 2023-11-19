@@ -22,7 +22,7 @@ file_handlers = {
 @router.post("/")
 async def upload(files: List[UploadFile], user_id, db: SessionLocal = Depends(get_db)):
     db_user = db.query(User).filter(User.id == user_id).first()
-    print(db_user)
+
     if db_user is None:
         raise HTTPException(status_code=404, detail="User not found")
     uploaded_files_name = []

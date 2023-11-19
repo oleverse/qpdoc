@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from app.database.db import get_db
 import app.repository.user_files as repo_user_files
 
-router = APIRouter(prefix='/user_files', tags=["user_files"])
+router = APIRouter(prefix='/user-files', tags=["user_files"])
 
 
 @router.get("/{file_id}")

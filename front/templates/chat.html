@@ -11,10 +11,10 @@
         <div class="leftbox">
             <form action="/upload" method="post" id="uploadForm" enctype="multipart/form-data" class="add-pdf" >
                 <input type="file" id="file-input" name="files"
-                       accept=".pdf, .docx, .odt" multiple>
+                       accept="{{supported_file_formats}}" multiple>
                 <label for="file-input">
                     <i class="fa-solid fa-arrow-up-from-bracket"></i>
-                    &nbsp; Upload file <span style="display: block">(pdf, docx, docx)</span>
+                    &nbsp; Upload file <span style="display: block">({{supported_file_formats}})</span>
                 </label>
                 <div id="num-of-files">No Files Coosen</div>
                 <ul id="files-list"></ul>
@@ -59,7 +59,7 @@
     </div>
 
     <script>
-        /* Script for file selector */
+        // function to get cookie value
         function getCookie(cname) {
             let name = cname + "=";
             let decodedCookie = decodeURIComponent(document.cookie);
@@ -76,27 +76,83 @@
             return "";
         }
 
-        fileSelector.addEventListener('change', (e) => {
-            e.preventDefault()
+        function addMessage(message_text, message_type) {
+            const elMsg = document.createElement('div')
+            elMsg.setAttribute('class', message_type + '-msg')
+            elMsg.innerHTML = "<p>" + message_text + "</p>"
+            subscribe.appendChild(elMsg)
+            subscribe.scrollTo({
+                top: subscribe.scrollHeight,
+                behavior: 'smooth'
+            });
+        }
 
-            if (parseInt(e.target.value)) {
-                fileContent.style.display = "inline-block"
+        function addUserMessage(message_text) {
+            addMessage(message_text, "user")
+        }
 
-                fetch("/api/user_files/" + e.target.value, {
-                    method: "GET",
-                    headers: {
-                        Authorization: getCookie("access_token").replaceAll('"', '')
-                    },
-                })
-                .then(resp => resp.json())
-                .then(json => {
-                    let userFileContent = JSON.stringify(json)
-                    fileContent.value = userFileContent.substring(1, userFileContent.length - 1)
-                })
-            } else {
-                fileContent.style.display = "none"
-            }
-        })
+        function addBotMessage(message_text) {
+            addMessage(message_text, "bot")
+        }
+
+        function addInfoMessage(message_text) {
+            addMessage(message_text, "info")
+        }
+
+        /* Script for file selector */
+        if (document.getElementById("fileSelector")) {
+            fileSelector.addEventListener('change', (e) => {
+                e.preventDefault()
+
+                subscribe.innerHTML = ''
+
+                addInfoMessage("We're online, let's talk!")
+
+                if (parseInt(e.target.value)) {
+                    fileContent.style.display = "inline-block"
+
+                    fetch("/api/user-files/" + e.target.value, {
+                        method: "GET",
+                        headers: {
+                            Authorization: getCookie("access_token").replaceAll('"', '')
+                        },
+                    })
+                    .then(resp => resp.json())
+                    .then(json => {
+                        let userFileContent = JSON.stringify(json)
+                        userFileContent = userFileContent.substring(1, userFileContent.length - 1)
+
+                        if (userFileContent.length) {
+                            fileContent.value = userFileContent
+                        } else {
+                            addInfoMessage("The file seems to be empty or unparsable")
+                        }
+                    })
+
+                    // Script for retrieving chat history
+                    fetch("/api/history/for-file/" + e.target.value, {
+                        method: "GET",
+                        headers: {
+                            Authorization: getCookie("access_token").replaceAll('"', '')
+                        },
+                    })
+                    .then(resp => resp.json())
+                    .then(chatHistory => {
+                        try {
+                            for (let h of chatHistory) {
+                                addUserMessage(h.question)
+                                addBotMessage(h.answer)
+                            }
+                        } catch (error) {
+                            console.log(chatHistory)
+                            console.log("No history for this file!")
+                        }
+                    })
+                } else {
+                    fileContent.style.display = "none"
+                }
+            })
+        }
 
         /* Script for file bar */
         let fileInput = document.getElementById("file-input");
@@ -141,41 +197,21 @@
                 e.preventDefault()
 
                 if (parseInt(fileSelector.value) == 0) {
-                    const elMsg = document.createElement('div')
-                    elMsg.setAttribute('class', 'info-msg')
-                    elMsg.innerHTML = "<p>You should choose a file for the context!</p>"
-                    subscribe.appendChild(elMsg)
-                    subscribe.scrollTo({
-                        top: subscribe.scrollHeight,
-                        behavior: 'smooth'
-                    });
+                    addInfoMessage("You should choose a file for the context!")
                 } else if (question.value) {
                     ws.send('{"user_id": {{user.id}}, "file_id": ' + parseInt(fileSelector.value) + ', "message": "'
                        + question.value.replaceAll('"', '\\\"') + '"}')
-                    const elMsg = document.createElement('div')
-                    elMsg.setAttribute('class', 'user-msg')
-                    elMsg.innerHTML = "<p>" + question.value + "</p>"
-                    subscribe.appendChild(elMsg)
+
+                    addUserMessage(question.value)
                     question.value = null
-                    subscribe.scrollTo({
-                        top: subscribe.scrollHeight,
-                        behavior: 'smooth'
-                    });
                 }
             }
 
             ws.onopen = (e) => {
                 console.log('Chat communication intitialized!')
 
-                const elMsg = document.createElement('div')
-                elMsg.setAttribute('class', 'info-msg')
-                elMsg.innerHTML = "<p>We're online, let's talk!</p>"
-                subscribe.appendChild(elMsg)
+                addInfoMessage("We're online, let's talk!")
                 subscribe.style.border = "none"
-                subscribe.scrollTo({
-                    top: subscribe.scrollHeight,
-                    behavior: 'smooth'
-                });
 
                 formChat.addEventListener('submit', submitForm)
                 formChat.getElementsByClassName("send-btn")[0].disabled = false;
@@ -187,20 +223,16 @@
             ws.onmessage = (e) => {
                 try {
                     data = JSON.parse(e.data);
-                    const elMsg = document.createElement('div')
-                    elMsg.setAttribute('class', 'bot-msg')
-                    elMsg.innerHTML = "<p>" + data.message + "</p>"
+
+                    message_text = data.message
 
                     if (data.code == 403) {
-                        elMsg.innerHTML += " Redirecting in 3 secs..."
+                        message_text += " Redirecting in 3 secs..."
                         setTimeout(() => {document.location = "/login"}, 3000)
                     }
 
-                    subscribe.appendChild(elMsg)
-                    subscribe.scrollTo({
-                        top: subscribe.scrollHeight,
-                        behavior: 'smooth'
-                    });
+                    addBotMessage(message_text)
+
                 } catch (err) {
                     console.log(err)
                 }
@@ -212,15 +244,10 @@
                 question.readOnly = true
                 question.setAttribute("placeholder", "No connection, chat is disabled...")
                 document.getElementsByClassName("typing-box")[0].style.borderColor = "#ba0000"
-                const elMsg = document.createElement('div')
-                elMsg.setAttribute('class', 'info-msg')
-                elMsg.innerHTML = "<p>Connection lost, reconnecting in 5 secs...</p>"
-                subscribe.appendChild(elMsg)
+
                 subscribe.style.border = "2px solid #ba0000"
-                subscribe.scrollTo({
-                    top: subscribe.scrollHeight,
-                    behavior: 'smooth'
-                });
+                addInfoMessage("Connection lost, reconnecting in 5 secs...")
+
                 setTimeout(startWebsocket, 5000)
             }
         }
