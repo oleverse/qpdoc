@@ -70,6 +70,7 @@ h1 {
     color: black;
     font-weight: 400;
     transition: 0.3s;
+    font-size: 12px;
 }
 
 .toogle-btn:hover {

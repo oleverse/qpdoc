@@ -34,6 +34,14 @@ async def get_history_for_user_by_file(user_id: int, file_id, db: Session):
         .order_by(History.id).limit(100).all()
 
 
+async def remove_qa_pair(qa_id: int, user_id, db: Session):
+    if qa_pair := db.query(History).filter(and_(History.user_id == user_id, History.id == qa_id)).first():
+        db.delete(qa_pair)
+        db.commit()
+    else:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="History pair not found")
+
+
 async def remove_history(id: int, db: Session):
     # history = await db.execute(
     #     select(History).join(User, User.id == History)

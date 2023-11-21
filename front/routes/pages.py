@@ -66,6 +66,7 @@ async def get_profile_page(request: Request, db: Session = Depends(get_db)):
                                               'page_header': 'User profile',
                                               'user_name': logged_in_user.username,
                                               'user_email': logged_in_user.email,
+                                              'model_types': ["gpt-3.5", "gpt-4"]
                                           })
 
 
@@ -190,10 +191,13 @@ async def websocket_endpoint(websocket: WebSocket, db: Session = Depends(get_db)
         else:
             try:
                 llm_data = await llm_endpoint(data["message"], data["user_id"], data["file_id"], db)
+
                 answer = {
-                    "code": 200,
+                    "code": llm_data["code"],
                     "message": llm_data["answer"]
                 }
+                if "qa_id" in llm_data.keys():
+                    answer["qa_id"] = llm_data["qa_id"]
                 await websocket.send_text(json.dumps(answer))
             except ValueError as error:
                 answer = {

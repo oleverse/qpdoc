@@ -118,3 +118,14 @@ async def user_activate(user_data: UserStatusChange, current_user: User = Depend
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found!")
 
     return user
+
+
+@router.delete("", response_model=UserDb)
+async def delete_user(
+        user: User = Depends(auth_service.get_current_user),
+        db: Session = Depends(get_db)):
+    user = await repository_users.delete_user_account(user, db)
+    if user is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="NOT_FOUND")
+    return user

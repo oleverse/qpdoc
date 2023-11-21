@@ -117,7 +117,7 @@ ul {
     width: 90%;
     font-weight: bold;
     margin-left: 15px;
-    font-size: 10px;
+    font-size: 12px;
     color: #000;
     background-color: #e0dee9;
     margin-bottom: 5px;
@@ -244,4 +244,38 @@ textarea#fileContent {
     border: 1px solid #4b5eb8;
     border-radius: 5px;
     height: 612px;
+}
+
+button.upload-btn {
+  width: 55%;
+  color: #fafafa;
+  padding: 7px 15px;
+  background-color: #4b5eb8;
+  border-radius: 10px;
+  border: none;
+  outline: none;
+  transition: 0.3s;
+  margin: 0 auto;
+  display: none;
+  font-size: 12px;
+}
+
+button.upload-btn:hover {
+  cursor: pointer;
+  background-color: #5b6ec8;
+}
+
+button.close-button {
+    float: right;
+    background-color: #ba0000;
+    outline: none;
+    border: none;
+    width: 16px;
+    color: #fafafa;
+    font-weight: bold;
+    border-radius: 8px;
+}
+
+button.close-button:hover {
+    transform: scale(1.1);
 }

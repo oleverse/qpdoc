@@ -14,10 +14,14 @@
                        accept="{{supported_file_formats}}" multiple>
                 <label for="file-input">
                     <i class="fa-solid fa-arrow-up-from-bracket"></i>
-                    &nbsp; Upload file <span style="display: block">({{supported_file_formats}})</span>
+                    &nbsp; Select files <span style="display: block">({{supported_file_formats}})</span>
                 </label>
                 <div id="num-of-files">No Files Coosen</div>
                 <ul id="files-list"></ul>
+                <p>
+                    <button type="submit"
+                    class="upload-btn">Upload</button>
+                </p>
             </form>
         </div>
 
@@ -76,10 +80,19 @@
             return "";
         }
 
-        function addMessage(message_text, message_type) {
+        function addMessage(message_text, message_type, msg_id=null) {
             const elMsg = document.createElement('div')
             elMsg.setAttribute('class', message_type + '-msg')
-            elMsg.innerHTML = "<p>" + message_text + "</p>"
+            if (msg_id) {
+                elMsg.setAttribute('data-id', msg_id)
+            }
+            if (message_type === "user") {
+                elMsg.innerHTML = '<button class="close-button"\
+aria-label="Close alert" type="button" data-close="">\
+<span aria-hidden="true">×</span>\
+</button>'
+            }
+            elMsg.innerHTML += "<p>" + message_text + "</p>"
             subscribe.appendChild(elMsg)
             subscribe.scrollTo({
                 top: subscribe.scrollHeight,
@@ -87,8 +100,8 @@
             });
         }
 
-        function addUserMessage(message_text) {
-            addMessage(message_text, "user")
+        function addUserMessage(message_text, msg_id) {
+            addMessage(message_text, "user", msg_id)
         }
 
         function addBotMessage(message_text) {
@@ -121,11 +134,15 @@
                     .then(json => {
                         let userFileContent = JSON.stringify(json)
                         userFileContent = userFileContent.substring(1, userFileContent.length - 1)
+                        userFileContent = userFileContent.replaceAll("\\n", String.fromCharCode(10))
+                            .replaceAll("\\r", String.fromCharCode(13))
 
                         if (userFileContent.length) {
                             fileContent.value = userFileContent
                         } else {
                             addInfoMessage("The file seems to be empty or unparsable")
+                            fileContent.value = ""
+                            fileContent.style.display = "none"
                         }
                     })
 
@@ -140,8 +157,27 @@
                     .then(chatHistory => {
                         try {
                             for (let h of chatHistory) {
-                                addUserMessage(h.question)
+                                addUserMessage(h.question, h.id)
                                 addBotMessage(h.answer)
+                            }
+                            closeButtons = document.getElementsByClassName("close-button")
+                            for (btn of closeButtons) {
+                                btn.addEventListener("click", (e) => {
+                                    if (confirm("The question-answer pair will be removed from the history. Are you sure?")) {
+                                        elementToRemove = e.target.parentElement.parentElement
+                                        qa_pair_id = parseInt(elementToRemove.getAttribute("data-id"))
+                                        if (elementToRemove.nextElementSibling.className === "bot-msg") {
+                                            elementToRemove.nextElementSibling.remove()
+                                        }
+                                        elementToRemove.remove()
+                                        fetch("/api/history/qa-pair/" + qa_pair_id, {
+                                            method: "DELETE",
+                                            headers: {
+                                                Authorization: getCookie("access_token").replaceAll('"', '')
+                                            },
+                                        })
+                                    }
+                                })
                             }
                         } catch (error) {
                             console.log(chatHistory)
@@ -178,7 +214,10 @@
                 fileList.appendChild(listItem);
             }
 
-            uploadForm.submit()
+            if (fileInput.files.length > 0) {
+                btns = document.getElementsByClassName("upload-btn")
+                btns[0].style.display = "block";
+            }
         });
 
         /* script for chatting via websocket */
@@ -226,12 +265,37 @@
 
                     message_text = data.message
 
-                    if (data.code == 403) {
+                    if (data.code === 403) {
                         message_text += " Redirecting in 3 secs..."
                         setTimeout(() => {document.location = "/login"}, 3000)
                     }
 
-                    addBotMessage(message_text)
+                    if (data.code === 200) {
+                        addBotMessage(message_text)
+                        if (data.qa_id) {
+                            lastUserMessage = document.getElementsByClassName("user-msg")
+                            lastUserMessage[lastUserMessage.length - 1].setAttribute("data-id", data.qa_id)
+                            lastUserMessage[lastUserMessage.length - 1].childNodes[0].addEventListener("click", (e) => {
+                                if (confirm("The question-answer pair will be removed from the history. Are you sure?")) {
+                                    elementToRemove = e.target.parentElement.parentElement
+                                    qa_pair_id = parseInt(elementToRemove.getAttribute("data-id"))
+                                    if (elementToRemove.nextElementSibling.className === "bot-msg") {
+                                        elementToRemove.nextElementSibling.remove()
+                                    }
+                                    elementToRemove.remove()
+                                    fetch("/api/history/qa-pair/" + qa_pair_id, {
+                                        method: "DELETE",
+                                        headers: {
+                                            Authorization: getCookie("access_token").replaceAll('"', '')
+                                        },
+                                    })
+                                }
+                            })
+                        }
+
+                    } else {
+                        addInfoMessage(message_text)
+                    }
 
                 } catch (err) {
                     console.log(err)

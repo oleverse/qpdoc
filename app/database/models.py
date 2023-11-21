@@ -54,7 +54,7 @@ class PDFModel(Base):
     id = Column(Integer, primary_key=True)
     filename = Column(String)
     content = Column(String)
-    user_id = Column(Integer, ForeignKey('users.id'))
+    user_id = Column(Integer, ForeignKey('users.id', ondelete='CASCADE'))
     user = relationship('User', back_populates="uploaded_files")
     history = relationship('History', backref='files')
 
@@ -71,7 +71,7 @@ class History(Base):
     __tablename__ = "histories"
 
     id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey('users.id'))
+    user_id = Column(Integer, ForeignKey('users.id', ondelete='CASCADE'))
     file_id = Column(Integer, ForeignKey('pdfs.id', ondelete='CASCADE'), nullable=True)
     question = Column(String)
     answer = Column(String)

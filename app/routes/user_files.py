@@ -17,4 +17,4 @@ async def get_file_content_by_id(file_id: int,
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f'The file not found')
 
-    return user_file.content[:3000] if len(user_file.content) > 3000 else user_file.content
+    return user_file.content[:30000] if len(user_file.content) > 30000 else user_file.content
