@@ -24,6 +24,12 @@ async def get_history_by_file(file_id: int, user: User = Depends(auth_service.ge
     return history
 
 
+@router.delete("/qa-pair/{history_pair_id}")
+async def remove_history_pair(history_pair_id: int, user: User = Depends(auth_service.get_current_user),
+                              db: Session = Depends(get_db)):
+    return await repository_history.remove_qa_pair(history_pair_id, user.id, db)
+
+
 @router.get("/{user_id}", response_model=List[HistoryResponse])
 async def get_history_for_user(user_id: int, db: Session = Depends(get_db)):
     db_user = db.query(User).filter(User.id == user_id).first()

@@ -24,7 +24,10 @@ async def llm_endpoint(query: str, user_id: int, file_id: int, db: SessionLocal 
     # for file in user_files:
     # Передаємо ID кожного файлу у функцію чат-бота
     answer = await llm_service.run_llm(query, user_id, file_id, db)
-    new_record = await repository_history.create_record(user_id, file_id, query, answer, db)
+    result = {"code": answer[0], "answer": answer[1]}
+    if answer[0] == 200:
+        new_record = await repository_history.create_record(user_id, file_id, query, answer[1], db)
+        result["qa_id"] = new_record.id
     # answers.append({"file_id": user_id, "answer": answer})
 
-    return {"answer": answer}
+    return result
