@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}
+    <title>{{ title }}</title>
+{% endblock %}
+{% block style_file %}
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/auth.css') }}">
+{% endblock %}
+{% block content %}
+    <div class="container">
+        <div class="form-box">
+            {% for error in errors %}
+                <span>{{error}}</span>
+            {% endfor %}
+            <div class="button-box">
+                <div id="btn"></div>
+
+
+                <button type="button" 
+                class="toogle-btn" onclick="login()">Login</button>
+
+                <button type="button"
+                class="toogle-btn" onclick="register()">Register
+
+                    
+                </button>
+            </div>
+            <form id="login" action="/login" method="post" class="input-group">
+                <input type="email"
+                name="log_username"
+                class="input-field"
+                placeholder="Email" required>
+                <input type="password"
+                name="log_password"
+                class="input-field"
+                placeholder="Password" required>
+                <button type="submit"
+                class="submit-btn">Login</button>
+            </form>
+            <form id="register" action="/register" method="post" class="input-group">
+                <input type="text"
+                name="username"
+                class="input-field"
+                placeholder="Username" required>
+                <input type="email"
+                name="email"
+                class="input-field"
+                placeholder="Email" required>
+                <input type="password"
+                name="password"
+                class="input-field"
+                placeholder="Password" required>
+                <button type="submit"
+                class="submit-btn">Register</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script_js %}
+    <script>
+        var log = document.getElementById("login")
+        var reg = document.getElementById("register")
+        var btn = document.getElementById("btn")
+
+        function login(){
+            log.style.left = "50px"
+            reg.style.left = "450px"
+            btn.style.left = "0px"
+        }
+
+        function register(){
+            log.style.left = "-400px"
+            reg.style.left = "50px"
+            btn.style.left = "110px"
+        }
+
+        {% if request.path == '/login' %}
+            login()
+        {% else %}
+            register()
+        {% endif %}
+    </script>
+{% endblock %}

@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+{% block title %}
+    <title>{{ title }}</title>
+{% endblock %}
+{% block style_file %}
+    <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/profile.css') }}">
+{% endblock %}
+{% block content %}
+
+    <div class="container">
+        <div class="leftbox">
+            <nav>
+                <a href="/" class="chat">
+                    <i class="fa-solid fa-comment-dots"></i>
+                </a>
+            </nav>
+        </div>
+
+        <div class="centerbox">
+            <div class="profile">
+                <h2>{{user_name}}</h2>
+                <h3>{{user_email}}</h3>
+
+                <form action="#" class="change-name">
+                    <p id="rename">Change username</p>
+                    <input type="text"
+                    id="new_username"
+                    class="input-field"
+                    placeholder="{{user_name}}" required autocomplete="off">
+                    <button type="submit"
+                    class="name-btn">Rename</button>
+                </form>
+
+                <form action="/logout_user" method="get" class="logout">
+                    <p>
+                        <button type="submit"
+                        class="logout-btn">Logout</button>
+                    </p>
+                </form>
+
+                <form action="/api/profile" class="del-acc" id="formDeleteAccount">
+                    <p>
+                        <button type="submit" id="btnDeleteAccount"
+                        class="delete-btn">Delete Account</button>
+                    </p>
+                </form>
+
+            </div>
+        </div>
+
+        <form action="/api/preferences/set-model" class="add-pdf">
+            <div class="rightbox">
+<!--                <input type="file" id="file-input" multiple>-->
+                <label for="file-input">
+<!--                    <i class="fa-solid fa-arrow-up-from-bracket"></i>-->
+                    App preferences
+                </label>
+<!--                <div id="num-of-files">No Files Coosen</div>-->
+<!--                <ul id="files-list"></ul>-->
+<!--                <span style="padding: 10px;">Choose a model to use:</span>-->
+<!--                {% for model_type in model_types %}-->
+<!--                <div class="model-type-wrapper">-->
+<!--                    <input type="radio" class="" name="model-type" value="{{model_type}}"-->
+<!--                    {% if model_type == "gpt-3.5" %}-->
+<!--                        checked="checked"-->
+<!--                    {% endif %}-->
+<!--                    />-->
+<!--                    <label class="model-label">{{model_type}}</label>-->
+<!--                </div>-->
+<!--                {% endfor %}-->
+<!--                <button type="submit" id="prefApplyButton" class="apply-btn">Застосувати</button>-->
+            </div>
+        </form>
+    </div>
+
+    <!-- SCRIPT FOR FILE BAR -->
+
+    <script>
+        // function to get cookie value
+        function getCookie(cname) {
+            let name = cname + "=";
+            let decodedCookie = decodeURIComponent(document.cookie);
+            let ca = decodedCookie.split(';');
+            for(let i = 0; i <ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) == ' ') {
+                    c = c.substring(1);
+                }
+                if (c.indexOf(name) == 0) {
+                    return c.substring(name.length, c.length);
+                }
+            }
+            return "";
+        }
+
+        btnDeleteAccount.addEventListener("click", (e) => {
+            e.preventDefault()
+
+            if (confirm("Your account and all the data will be deleted. Are you sure?")) {
+                fetch("/api/profile", {
+                    method: "DELETE",
+                    headers: {
+                        Authorization: getCookie("access_token").replaceAll('"', '')
+                    },
+                })
+                .then(resp => {
+                    document.cookie = "access_token= ; expires = Thu, 01 Jan 1970 00:00:00 GMT"
+                    document.location = "/"
+                })
+            }
+        })
+
+        /*prefApplyButton.addEventListener("click", (e) => {
+            e.preventDefault()
+
+            let modelType = null
+
+            for (e of document.getElementsByName("model-type")) {
+                if (e.checked) {
+                    modelType = e.value
+                }
+            }
+
+            fetch("/api/llm/model-type", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                }
+                body: JSON.stringify({"model-type": modelType})
+                headers: {
+                    Authorization: getCookie("access_token").replaceAll('"', '')
+                },
+            })
+            .then(resp => {
+                document.cookie = "access_token= ; expires = Thu, 01 Jan 1970 00:00:00 GMT"
+                document.location = "/"
+            })
+        })*/
+    </script>
+{% endblock %}

@@ -1,0 +1,322 @@
+{% extends "base.html" %}
+{% block title %}
+    <title>{{ title }}</title>
+{% endblock %}
+{% block style_file %}
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/chat.css') }}">
+{% endblock %}
+{% block content %}
+    <div class="container">
+
+        <div class="leftbox">
+            <form action="/upload" method="post" id="uploadForm" enctype="multipart/form-data" class="add-pdf" >
+                <input type="file" id="file-input" name="files"
+                       accept="{{supported_file_formats}}" multiple>
+                <label for="file-input">
+                    <i class="fa-solid fa-arrow-up-from-bracket"></i>
+                    &nbsp; Select files <span style="display: block">({{supported_file_formats}})</span>
+                </label>
+                <div id="num-of-files">No Files Coosen</div>
+                <ul id="files-list"></ul>
+                <p>
+                    <button type="submit"
+                    class="upload-btn">Upload</button>
+                </p>
+            </form>
+        </div>
+
+        <div class="rightbox">
+            <div class="msgs" id="subscribe">
+            </div>
+
+            <div class="typing-box">
+                <form id="formChat" class="send">
+                    <input type="text" id="question"
+                    class="input-field"
+                    placeholder="What do you want to know..."
+                    autocomplete="off">
+                    <button type="submit" class="send-btn">
+                        <i class="fa-solid fa-circle-arrow-up"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="view-wrapper">
+            <div class="file-selector-wrapper">
+                {% if user_files %}
+                <select id="fileSelector">
+                    <option value="0">Choose a file for the context...</option>
+                    {% for user_file in user_files %}
+                    <option value="{{user_file.id}}">{{user_file.filename}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="file-content">
+                <textarea id="fileContent"></textarea>
+                {% else %}
+                    <span>You don't have any files yet.</span>
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // function to get cookie value
+        function getCookie(cname) {
+            let name = cname + "=";
+            let decodedCookie = decodeURIComponent(document.cookie);
+            let ca = decodedCookie.split(';');
+            for(let i = 0; i <ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) == ' ') {
+                    c = c.substring(1);
+                }
+                if (c.indexOf(name) == 0) {
+                    return c.substring(name.length, c.length);
+                }
+            }
+            return "";
+        }
+
+        function addMessage(message_text, message_type, msg_id=null) {
+            const elMsg = document.createElement('div')
+            elMsg.setAttribute('class', message_type + '-msg')
+            if (msg_id) {
+                elMsg.setAttribute('data-id', msg_id)
+            }
+            if (message_type === "user") {
+                elMsg.innerHTML = '<button class="close-button"\
+aria-label="Close alert" type="button" data-close="">\
+<span aria-hidden="true">×</span>\
+</button>'
+            }
+            elMsg.innerHTML += "<p>" + message_text + "</p>"
+            subscribe.appendChild(elMsg)
+            subscribe.scrollTo({
+                top: subscribe.scrollHeight,
+                behavior: 'smooth'
+            });
+        }
+
+        function addUserMessage(message_text, msg_id) {
+            addMessage(message_text, "user", msg_id)
+        }
+
+        function addBotMessage(message_text) {
+            addMessage(message_text, "bot")
+        }
+
+        function addInfoMessage(message_text) {
+            addMessage(message_text, "info")
+        }
+
+        /* Script for file selector */
+        if (document.getElementById("fileSelector")) {
+            fileSelector.addEventListener('change', (e) => {
+                e.preventDefault()
+
+                subscribe.innerHTML = ''
+
+                addInfoMessage("We're online, let's talk!")
+
+                if (parseInt(e.target.value)) {
+                    fileContent.style.display = "inline-block"
+
+                    fetch("/api/user-files/" + e.target.value, {
+                        method: "GET",
+                        headers: {
+                            Authorization: getCookie("access_token").replaceAll('"', '')
+                        },
+                    })
+                    .then(resp => resp.json())
+                    .then(json => {
+                        let userFileContent = JSON.stringify(json)
+                        userFileContent = userFileContent.substring(1, userFileContent.length - 1)
+                        userFileContent = userFileContent.replaceAll("\\n", String.fromCharCode(10))
+                            .replaceAll("\\r", String.fromCharCode(13))
+
+                        if (userFileContent.length) {
+                            fileContent.value = userFileContent
+                        } else {
+                            addInfoMessage("The file seems to be empty or unparsable")
+                            fileContent.value = ""
+                            fileContent.style.display = "none"
+                        }
+                    })
+
+                    // Script for retrieving chat history
+                    fetch("/api/history/for-file/" + e.target.value, {
+                        method: "GET",
+                        headers: {
+                            Authorization: getCookie("access_token").replaceAll('"', '')
+                        },
+                    })
+                    .then(resp => resp.json())
+                    .then(chatHistory => {
+                        try {
+                            for (let h of chatHistory) {
+                                addUserMessage(h.question, h.id)
+                                addBotMessage(h.answer)
+                            }
+                            closeButtons = document.getElementsByClassName("close-button")
+                            for (btn of closeButtons) {
+                                btn.addEventListener("click", (e) => {
+                                    if (confirm("The question-answer pair will be removed from the history. Are you sure?")) {
+                                        elementToRemove = e.target.parentElement.parentElement
+                                        qa_pair_id = parseInt(elementToRemove.getAttribute("data-id"))
+                                        if (elementToRemove.nextElementSibling.className === "bot-msg") {
+                                            elementToRemove.nextElementSibling.remove()
+                                        }
+                                        elementToRemove.remove()
+                                        fetch("/api/history/qa-pair/" + qa_pair_id, {
+                                            method: "DELETE",
+                                            headers: {
+                                                Authorization: getCookie("access_token").replaceAll('"', '')
+                                            },
+                                        })
+                                    }
+                                })
+                            }
+                        } catch (error) {
+                            console.log(chatHistory)
+                            console.log("No history for this file!")
+                        }
+                    })
+                } else {
+                    fileContent.style.display = "none"
+                }
+            })
+        }
+
+        /* Script for file bar */
+        let fileInput = document.getElementById("file-input");
+        let fileList = document.getElementById("files-list");
+        let numOfFiles = document.getElementById("num-of-files");
+
+        fileInput.addEventListener("change", () => {
+            fileList.innerHTML = "";
+            numOfFiles.textContent = `${fileInput.files.length}
+            Files Selected`;
+
+            for (i of fileInput.files) {
+                let reader = new FileReader();
+                let listItem = document.createElement("li");
+                let fileName = i.name;
+                fileSize = (i.size / 1024).toFixed(1);
+                listItem.innerHTML = `<p>${fileName}</p><p>${fileSize}KB</p>`;
+
+                if (fileSize >= 1024) {
+                    fileSize = (fileSize / 1024).toFixed(1);
+                    listItem.innerHTML = `<p>${fileName}</p><p>${fileSize}MB</p>`;
+                }
+                fileList.appendChild(listItem);
+            }
+
+            if (fileInput.files.length > 0) {
+                btns = document.getElementsByClassName("upload-btn")
+                btns[0].style.display = "block";
+            }
+        });
+
+        /* script for chatting via websocket */
+        console.log('Starting the chat!')
+
+        function startWebsocket() {
+            let ws = null
+            try {
+                ws = new WebSocket('ws://{{ ws_address }}')
+            } catch (err) {
+                console.log('Failed to connect to the ws endpoint, retrying...')
+                return
+            }
+
+            function submitForm(e) {
+                e.preventDefault()
+
+                if (parseInt(fileSelector.value) == 0) {
+                    addInfoMessage("You should choose a file for the context!")
+                } else if (question.value) {
+                    ws.send('{"user_id": {{user.id}}, "file_id": ' + parseInt(fileSelector.value) + ', "message": "'
+                       + question.value.replaceAll('"', '\\\"') + '"}')
+
+                    addUserMessage(question.value)
+                    question.value = null
+                }
+            }
+
+            ws.onopen = (e) => {
+                console.log('Chat communication intitialized!')
+
+                addInfoMessage("We're online, let's talk!")
+                subscribe.style.border = "none"
+
+                formChat.addEventListener('submit', submitForm)
+                formChat.getElementsByClassName("send-btn")[0].disabled = false;
+                question.readOnly = false;
+                question.setAttribute("placeholder", "What do you want to know...")
+                document.getElementsByClassName("typing-box")[0].style.borderColor = "#4b5eb8"
+            }
+
+            ws.onmessage = (e) => {
+                try {
+                    data = JSON.parse(e.data);
+
+                    message_text = data.message
+
+                    if (data.code === 403) {
+                        message_text += " Redirecting in 3 secs..."
+                        setTimeout(() => {document.location = "/login"}, 3000)
+                    }
+
+                    if (data.code === 200) {
+                        addBotMessage(message_text)
+                        if (data.qa_id) {
+                            lastUserMessage = document.getElementsByClassName("user-msg")
+                            lastUserMessage[lastUserMessage.length - 1].setAttribute("data-id", data.qa_id)
+                            lastUserMessage[lastUserMessage.length - 1].childNodes[0].addEventListener("click", (e) => {
+                                if (confirm("The question-answer pair will be removed from the history. Are you sure?")) {
+                                    elementToRemove = e.target.parentElement.parentElement
+                                    qa_pair_id = parseInt(elementToRemove.getAttribute("data-id"))
+                                    if (elementToRemove.nextElementSibling.className === "bot-msg") {
+                                        elementToRemove.nextElementSibling.remove()
+                                    }
+                                    elementToRemove.remove()
+                                    fetch("/api/history/qa-pair/" + qa_pair_id, {
+                                        method: "DELETE",
+                                        headers: {
+                                            Authorization: getCookie("access_token").replaceAll('"', '')
+                                        },
+                                    })
+                                }
+                            })
+                        }
+
+                    } else {
+                        addInfoMessage(message_text)
+                    }
+
+                } catch (err) {
+                    console.log(err)
+                }
+            }
+
+            ws.onclose = () => {
+                formChat.removeEventListener('submit', submitForm)
+                formChat.getElementsByClassName("send-btn")[0].disabled = true;
+                question.readOnly = true
+                question.setAttribute("placeholder", "No connection, chat is disabled...")
+                document.getElementsByClassName("typing-box")[0].style.borderColor = "#ba0000"
+
+                subscribe.style.border = "2px solid #ba0000"
+                addInfoMessage("Connection lost, reconnecting in 5 secs...")
+
+                setTimeout(startWebsocket, 5000)
+            }
+        }
+
+        startWebsocket()
+
+    </script>
+{% endblock %}

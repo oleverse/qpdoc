@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        {% block title %}
+        {% endblock %}
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+        {% block style_file %}
+        {% endblock %}
+    </head>
+    <body>
+        <div class="wrapper">
+            <header>
+                <h1 class="title">{{ title }}</h1>
+                <h2 id="text">{{ page_header }}</h2>
+                <nav>
+                    {% if request.path == '/chat' %}
+                    <a href="/profile" class="to-profile">
+                        <img src="{{user.avatar}}" height="70px" width="70px" />
+                        <div>{{user.username}}</div>
+                    </a>
+                    {% endif %}
+                </nav>
+            </header>
+            {% block content %}
+            {% endblock %}
+        </div>
+        {% block script_js %}
+        {% endblock %}
+    </body>
+</html>
