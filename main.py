@@ -5,7 +5,7 @@ from starlette.staticfiles import StaticFiles
 from app.conf.config import settings
 # from app.routes import auth, search, profile, users
 from front.routes import pages
-from app.routes import auth, profile, upload_pdf, llm_endpoint
+from app.routes import auth, profile, upload_pdf, llm_endpoint, history, user_files
 from sqlalchemy import text
 from app.database.db import get_db
 import uvicorn
@@ -18,7 +18,9 @@ app.mount("/static", StaticFiles(directory="front/static"), name="static")
 app.include_router(auth.router, prefix='/api')
 app.include_router(profile.router, prefix='/api')
 app.include_router(upload_pdf.router, prefix='/api')
-app.include_router(llm_endpoint.router, prefix='/llm')
+app.include_router(llm_endpoint.router, prefix='/api')
+app.include_router(history.router, prefix='/api')
+app.include_router(user_files.router, prefix='/api')
 app.include_router(pages.router, include_in_schema=False)
 
 

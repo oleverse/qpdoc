@@ -11,6 +11,7 @@ from starlette.websockets import WebSocketDisconnect
 
 import app.routes.upload_pdf
 from app.conf.config import settings
+from app.repository.user_files import get_user_files
 from app.routes.llm_endpoint import llm_endpoint
 from app.schemas.essential import UserModel
 
@@ -24,6 +25,7 @@ from psycopg2 import IntegrityError
 from app.repository.users import user_exists
 
 from app.repository.users import add_to_blacklist
+from app.routes.upload_pdf import file_handlers
 
 
 router = APIRouter(tags=['pages'])
@@ -64,6 +66,7 @@ async def get_profile_page(request: Request, db: Session = Depends(get_db)):
                                               'page_header': 'User profile',
                                               'user_name': logged_in_user.username,
                                               'user_email': logged_in_user.email,
+                                              'model_types': ["gpt-3.5", "gpt-4"]
                                           })
 
 
@@ -143,13 +146,16 @@ async def get_chat_page(request: Request, db: Session = Depends(get_db)):
         return RedirectResponse("/login",
                                 headers={"Location": "/login"})
     else:
+        user_files = await get_user_files(logged_in_user.id, db)
         return templates.TemplateResponse('chat.html',
                                           {
                                               'request': request,
                                               'title': app_title_main,
                                               'page_header': 'Query Processed Documents Chat',
                                               'ws_address': f'localhost:{settings.app_port}',
-                                              'user_id': logged_in_user.id
+                                              'user': logged_in_user,
+                                              'user_files': user_files,
+                                              'supported_file_formats': ', '.join(file_handlers)
                                           })
 
 
@@ -169,19 +175,36 @@ async def get_main_page(request: Request, db: Session = Depends(get_db)):
 async def websocket_endpoint(websocket: WebSocket, db: Session = Depends(get_db)):
     await websocket.accept()
     while True:
-        # try:
-        data = await websocket.receive_text()
+        try:
+            data = await websocket.receive_text()
+        except (RuntimeError, WebSocketDisconnect):
+            return False
+
         data = json.loads(data)
+
         if not await user_exists(data["user_id"], db):
-            await websocket.send_text('{"code": 403, "message": "You are not authorized! Please log in."}')
+            answer = {
+                "code": 403,
+                "message": "You are not authorized! Please log in."
+            }
+            await websocket.send_text(json.dumps(answer))
         else:
             try:
-                llm_data = await llm_endpoint(data["message"], data["user_id"], db)
-                await websocket.send_text(f'{{"code": 200, "message": "{llm_data["answer"]}"}}')
+                llm_data = await llm_endpoint(data["message"], data["user_id"], data["file_id"], db)
+
+                answer = {
+                    "code": llm_data["code"],
+                    "message": llm_data["answer"]
+                }
+                if "qa_id" in llm_data.keys():
+                    answer["qa_id"] = llm_data["qa_id"]
+                await websocket.send_text(json.dumps(answer))
             except ValueError as error:
-                await websocket.send_text(f'{{"code": 404, "message": "{error}"}}')
-        # except (RuntimeError, WebSocketDisconnect):
-        #     await websocket.close()
+                answer = {
+                    "code": 404,
+                    "message": error
+                }
+                await websocket.send_text(json.dumps(answer))
 
 
 @router.get("/logout_user")

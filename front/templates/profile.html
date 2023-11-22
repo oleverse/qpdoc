@@ -24,7 +24,7 @@
                 <h3>{{user_email}}</h3>
 
                 <form action="#" class="change-name">
-                    <p id="rename">Змінити ім'я користувача</p>
+                    <p id="rename">Change username</p>
                     <input type="text"
                     id="new_username"
                     class="input-field"
@@ -40,9 +40,9 @@
                     </p>
                 </form>
 
-                <form action="#" class="del-acc">
+                <form action="/api/profile" class="del-acc" id="formDeleteAccount">
                     <p>
-                        <button type="submit"
+                        <button type="submit" id="btnDeleteAccount"
                         class="delete-btn">Delete Account</button>
                     </p>
                 </form>
@@ -50,15 +50,27 @@
             </div>
         </div>
 
-        <form action="#" class="add-pdf">
+        <form action="/api/preferences/set-model" class="add-pdf">
             <div class="rightbox">
-                <input type="file" id="file-input" multiple>
+<!--                <input type="file" id="file-input" multiple>-->
                 <label for="file-input">
-                    <i class="fa-solid fa-arrow-up-from-bracket"></i>
-                    &nbsp; Choose PDF
+<!--                    <i class="fa-solid fa-arrow-up-from-bracket"></i>-->
+                    App preferences
                 </label>
-                <div id="num-of-files">No Files Coosen</div>
-                <ul id="files-list"></ul>
+<!--                <div id="num-of-files">No Files Coosen</div>-->
+<!--                <ul id="files-list"></ul>-->
+<!--                <span style="padding: 10px;">Choose a model to use:</span>-->
+<!--                {% for model_type in model_types %}-->
+<!--                <div class="model-type-wrapper">-->
+<!--                    <input type="radio" class="" name="model-type" value="{{model_type}}"-->
+<!--                    {% if model_type == "gpt-3.5" %}-->
+<!--                        checked="checked"-->
+<!--                    {% endif %}-->
+<!--                    />-->
+<!--                    <label class="model-label">{{model_type}}</label>-->
+<!--                </div>-->
+<!--                {% endfor %}-->
+<!--                <button type="submit" id="prefApplyButton" class="apply-btn">Застосувати</button>-->
             </div>
         </form>
     </div>
@@ -66,28 +78,65 @@
     <!-- SCRIPT FOR FILE BAR -->
 
     <script>
-        let fileInput = document.getElementById("file-input");
-        let fileList = document.getElementById("files-list");
-        let numOfFiles = document.getElementById("num-of-files");
-
-        fileInput.addEventListener("change", () => {
-            fileList.innerHTML = "";
-            numOfFiles.textContent = `${fileInput.files.length}
-            Files Selected`;
-
-            for (i of fileInput.files) {
-                let reader = new FileReader();
-                let listItem = document.createElement("li");
-                let fileName = i.name;
-                fileSize = (i.size / 1024).toFixed(1);
-                listItem.innerHTML = `<p>${fileName}</p><p>${fileSize}KB</p>`;
-
-                if (fileSize >= 1024) {
-                    fileSize = (fileSize / 1024).toFixed(1);
-                    listItem.innerHTML = `<p>${fileName}</p><p>${fileSize}MB</p>`;
+        // function to get cookie value
+        function getCookie(cname) {
+            let name = cname + "=";
+            let decodedCookie = decodeURIComponent(document.cookie);
+            let ca = decodedCookie.split(';');
+            for(let i = 0; i <ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) == ' ') {
+                    c = c.substring(1);
                 }
-                fileList.appendChild(listItem);
+                if (c.indexOf(name) == 0) {
+                    return c.substring(name.length, c.length);
+                }
             }
-        });
+            return "";
+        }
+
+        btnDeleteAccount.addEventListener("click", (e) => {
+            e.preventDefault()
+
+            if (confirm("Your account and all the data will be deleted. Are you sure?")) {
+                fetch("/api/profile", {
+                    method: "DELETE",
+                    headers: {
+                        Authorization: getCookie("access_token").replaceAll('"', '')
+                    },
+                })
+                .then(resp => {
+                    document.cookie = "access_token= ; expires = Thu, 01 Jan 1970 00:00:00 GMT"
+                    document.location = "/"
+                })
+            }
+        })
+
+        /*prefApplyButton.addEventListener("click", (e) => {
+            e.preventDefault()
+
+            let modelType = null
+
+            for (e of document.getElementsByName("model-type")) {
+                if (e.checked) {
+                    modelType = e.value
+                }
+            }
+
+            fetch("/api/llm/model-type", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                }
+                body: JSON.stringify({"model-type": modelType})
+                headers: {
+                    Authorization: getCookie("access_token").replaceAll('"', '')
+                },
+            })
+            .then(resp => {
+                document.cookie = "access_token= ; expires = Thu, 01 Jan 1970 00:00:00 GMT"
+                document.location = "/"
+            })
+        })*/
     </script>
 {% endblock %}

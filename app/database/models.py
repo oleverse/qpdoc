@@ -8,7 +8,6 @@ from sqlalchemy import Column, Integer, String, func, ForeignKey, Boolean, Table
 from sqlalchemy.future import engine
 from sqlalchemy.sql.sqltypes import DateTime
 from sqlalchemy.orm import relationship, declarative_base, column_property
-from sqlalchemy.testing.pickleable import User
 
 Base = declarative_base()
 
@@ -47,6 +46,7 @@ class User(Base):
     updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
     role = relationship("Role", backref="users")
     uploaded_files = relationship('PDFModel', back_populates='user')
+    history = relationship('History', backref='user')
 
 
 class PDFModel(Base):
@@ -54,8 +54,9 @@ class PDFModel(Base):
     id = Column(Integer, primary_key=True)
     filename = Column(String)
     content = Column(String)
-    user_id = Column(Integer, ForeignKey('users.id'))
+    user_id = Column(Integer, ForeignKey('users.id', ondelete='CASCADE'))
     user = relationship('User', back_populates="uploaded_files")
+    history = relationship('History', backref='files')
 
 
 class BlacklistToken(Base):
@@ -64,3 +65,15 @@ class BlacklistToken(Base):
     id = Column(Integer, primary_key=True)
     token = Column(String(500), unique=True, nullable=False, index=True)
     blacklisted_on = Column(DateTime, default=func.now())
+
+
+class History(Base):
+    __tablename__ = "histories"
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey('users.id', ondelete='CASCADE'))
+    file_id = Column(Integer, ForeignKey('pdfs.id', ondelete='CASCADE'), nullable=True)
+    question = Column(String)
+    answer = Column(String)
+    created_at = Column(DateTime, default=func.now(), onupdate=func.now())
+    updated_at = Column(DateTime, default=func.now(), onupdate=func.now())

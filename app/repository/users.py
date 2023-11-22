@@ -5,6 +5,7 @@ import uuid
 from fastapi import HTTPException, status
 from libgravatar import Gravatar
 from slugify import slugify
+from sqlalchemy import and_
 from sqlalchemy.orm import Session
 
 from app.database.models import User, BlacklistToken, RoleNames, Role
@@ -41,6 +42,11 @@ async def create_user(body: UserModel, db: Session):
         email=body.email,
         password=body.password,
         avatar=avatar,
+
+        # for debug and testing purposes
+        is_active=True,
+        confirmed=True,
+
         role_id=role.id
     )
     # new_user = User(**body.model_dump(), avatar=avatar)
@@ -137,18 +143,7 @@ async def update_user_self(body: UserModel, user: User, db: Session) -> User | N
     return user
 
 
-async def update_user_as_admin(body: UserUpdate, user: User, db: Session) -> Type[User] | None:
-    pass
-#
-#     user_to_update = db.query(User).filter(User.username == body.username).first()
-#     if user_to_update:
-#         if user.role == RoleNames.admin:
-#             user_to_update.username = body.username
-#             user_to_update.email = body.email
-#             user_to_update.is_active = body.is_active
-#             user_to_update.user_role = body.role
-#             user_to_update.updated_at = datetime.now()
-#             db.commit()
-#         return user_to_update
-#     return None
-
+async def delete_user_account(user: User, db: Session):
+    if user := db.query(User).filter(and_(User.id == user.id)).first():
+        db.delete(user)
+        db.commit()
