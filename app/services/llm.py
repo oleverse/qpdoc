@@ -26,7 +26,7 @@ class Document:
 
 class LanguageModelService(ABC):
     @abstractmethod
-    async def run_llm(self, query: str, user_id: int, file_id: int, model_type: str, db: SessionLocal):
+    async def run_llm(self, query: str, user_id: int, file_id: int, db: SessionLocal):
         pass
 
 
@@ -39,7 +39,7 @@ class OpenAILanguageModel(LanguageModelService):
     def __init__(self, api_key):
         openai.api_key = api_key
 
-    async def run_llm(self, query: str, user_id: int, file_id: int, model_type: str, db: SessionLocal):
+    async def run_llm(self, query: str, user_id: int, file_id: int, db: SessionLocal):
         # Отримання вмісту файлу з бази даних
         user_file = db.query(PDFModel).filter(and_(PDFModel.user_id == user_id, PDFModel.id == file_id)).first()
 
@@ -78,8 +78,8 @@ class OpenAILanguageModel(LanguageModelService):
             "gpt-3.5": "gpt-3.5-turbo-1106",
             "gpt-4": "gpt-4",
         }
-        openai_llm = ChatOpenAI(openai_api_key=settings.openai_api_key, model=model_types[model_type],
-                                temperature=1, timeout=100)
+        model_type = "gpt-3.5"
+        openai_llm = ChatOpenAI(openai_api_key=settings.openai_api_key, model=model_types[model_type], timeout=100)
 
         qa = ConversationalRetrievalChain.from_llm(
             llm=openai_llm,
