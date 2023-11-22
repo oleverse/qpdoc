@@ -44,8 +44,8 @@ async def create_user(body: UserModel, db: Session):
         avatar=avatar,
 
         # for debug and testing purposes
-        is_active=True,
-        confirmed=True,
+        # is_active=True,
+        # confirmed=True,
 
         role_id=role.id
     )

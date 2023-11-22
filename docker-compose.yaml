@@ -1,16 +1,27 @@
 version: '3'
 services:
-#  redis:
-#   image: redis:alpine
-#    ports:
-#     - "${REDIS_PORT}:6379"
+  app:
+    env_file:
+      - ./.env
+    image: oleverse/qpdoc
+    depends_on:
+      - postgres
+    networks:
+      - qpdoc_net
+    ports:
+      - "${APP_PORT}:${APP_PORT}"
+#    volumes:
+#      - ./ssl:/home/qpdoc/ssl
+
   postgres:
     image: postgres
     environment:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSW}
-    ports:
-      - "${DB_PORT}:5432"
+    networks:
+      - qpdoc_net
 #    volumes:
 #      - ./postgres-data:/var/lib/postgresql/data
+networks:
+  qpdoc_net:
