@@ -152,7 +152,7 @@ async def get_chat_page(request: Request, db: Session = Depends(get_db)):
                                               'request': request,
                                               'title': app_title_main,
                                               'page_header': 'Query Processed Documents Chat',
-                                              'ws_address': f'localhost:{settings.app_port}',
+                                              'ws_address': f'{settings.app_host}:{settings.app_port}',
                                               'user': logged_in_user,
                                               'user_files': user_files,
                                               'supported_file_formats': ', '.join(file_handlers)

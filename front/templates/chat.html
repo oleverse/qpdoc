@@ -226,7 +226,7 @@ aria-label="Close alert" type="button" data-close="">\
         function startWebsocket() {
             let ws = null
             try {
-                ws = new WebSocket('ws://{{ ws_address }}')
+                ws = new WebSocket('{{ ws_address }}')
             } catch (err) {
                 console.log('Failed to connect to the ws endpoint, retrying...')
                 return

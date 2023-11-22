@@ -1,11 +1,22 @@
-FROM python:3.10.13-slim
+FROM python:3.11-slim
 
 RUN useradd -m qpdoc
 WORKDIR /home/qpdoc
-COPY .env pyproject.toml README.md LICENSE .
-COPY . $WORKDIR
+COPY README.md LICENSE ./
+RUN mkdir app
+COPY app app/
+COPY main.py $WORKDIR
+COPY requirements.txt $WORKDIR
+COPY start_the_app.sh $WORKDIR
+COPY alembic.ini $WORKDIR
+RUN mkdir front
+COPY front front/
+RUN mkdir migrations
+COPY migrations migrations/
+COPY Dockerfile $WORKDIR
+COPY start_the_app.sh .local/bin/
 RUN chown -R qpdoc:qpdoc /home/qpdoc
-RUN chmod 0400 key.pem
+RUN mkdir ssl
 USER qpdoc
 
 ENV PATH="$PATH:/home/qpdoc/.local/bin"
@@ -15,8 +26,4 @@ ENV PYTHONUNBUFFERED 1
 RUN pip install -r requirements.txt
 
 
-ENTRYPOINT ["python", "main.py"]
-#ENTRYPOINT uvicorn main:app --host 0.0.0.0 --ssl-keyfile=key.pem --ssl-certfile=cert.pem
-
-CMD alembic upgrade head
-
+ENTRYPOINT ["./start_the_app.sh"]
